@@ -20,7 +20,7 @@ public class BanHistory {
 	
 	@ManyToOne
 	@JoinColumn(name = "Banned User id")
-	private User user;
+	private User banUser;
 
 	@Column (name = "Ban Time")
 	private LocalDateTime banTime;
@@ -40,11 +40,11 @@ public class BanHistory {
 	
 //	Getters and Setters
 	public User getUser() {
-		return user;
+		return banUser;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setUser(User banUser) {
+		this.banUser = banUser;
 	}
 
 	public LocalDateTime getBanTime() {

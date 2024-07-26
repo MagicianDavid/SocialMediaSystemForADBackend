@@ -51,16 +51,16 @@ public class User {
 	
 	
 	//----------XT-----------------
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "followedUser", cascade = CascadeType.ALL)
 	private List<Follower> followers;
 	
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "followingUser", cascade = CascadeType.ALL)
 	private List<Following> followings;
 	
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "banUser", cascade = CascadeType.ALL)
 	private List<BanHistory> banHistories;
 	
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "notificationUser", cascade = CascadeType.ALL)
 	private List<Notification> notifications;
 	
 	

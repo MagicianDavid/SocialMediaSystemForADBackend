@@ -18,7 +18,7 @@ public class Following {
 	
 	@ManyToOne
 	@JoinColumn(name = "Following Id")
-	private User user;
+	private User followingUser;
 	
 	@Column (name = "Following Time")
 	private LocalDateTime followingTime;
@@ -26,18 +26,19 @@ public class Following {
 	
 	public Following() {}
 	
-	public Following(LocalDateTime followingTime) {
+	public Following(LocalDateTime followingTime, User followingUser) {
 		this.followingTime = followingTime; 
-		}
+		this.followingUser = followingUser;
+	}
 
 	
 	//	Getters and Setters
-	public User getUser() {
-		return user;
+	public User getFollowingUser() {
+		return followingUser;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setFollowingUser(User followingUser) {
+		this.followingUser = followingUser;
 	}
 
 	public LocalDateTime getFollowingTime() {

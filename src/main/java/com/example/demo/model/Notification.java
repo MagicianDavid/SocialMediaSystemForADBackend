@@ -20,7 +20,7 @@ public class Notification {
 	
 	@ManyToOne
 	@JoinColumn(name = "Banned User id")
-	private User user;
+	private User notificationUser;
 	
 	@Column (name = "Message", length = 255)
 	private String message;
@@ -41,10 +41,10 @@ public class Notification {
 	
 	//	Getters and Setters
 	public User getUser() {
-		return user;
+		return notificationUser;
 	}
-	public void setUser(User user) {
-		this.user = user;
+	public void setUser(User notificationUser) {
+		this.notificationUser = notificationUser;
 	}
 	public String getMessage() {
 		return message;
