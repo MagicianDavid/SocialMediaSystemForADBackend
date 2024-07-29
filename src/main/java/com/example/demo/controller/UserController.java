@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dto.LoginRequest;
 import com.example.demo.exception.DuplicateUserException;
 import com.example.demo.exception.DuplicateTypeException;
+import com.example.demo.interfacemethods.FollowInterface;
 import com.example.demo.interfacemethods.UserInterface;
+import com.example.demo.model.Follower;
+import com.example.demo.model.Following;
 import com.example.demo.model.User;
 
 @RestController
@@ -26,6 +30,9 @@ public class UserController {
 
     @Autowired
     private UserInterface userService;
+    
+    @Autowired
+    private FollowInterface followService;
 
     // check user_name and password if match then login
     @PostMapping("/login")
@@ -100,6 +107,36 @@ public class UserController {
     public ResponseEntity<Void> baneUser(@PathVariable("id") Integer id) {
         userService.banUserById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{followerId}/follow/{followedUserId}")
+    public ResponseEntity<String> followUser(@PathVariable Integer followerId, @PathVariable Integer followedUserId) {
+        User follower = userService.findUserById(followerId);
+        User followedUser = userService.findUserById(followedUserId);
+        followService.followUser(follower, followedUser);
+        return ResponseEntity.ok("User followed successfully.");
+    }
+
+    @DeleteMapping("/{followerId}/unfollow/{followedUserId}")
+    public ResponseEntity<String> unfollowUser(@PathVariable Integer followerId, @PathVariable Integer followedUserId) {
+        User follower = userService.findUserById(followerId);
+        User followedUser = userService.findUserById(followedUserId);
+        followService.unfollowUser(follower, followedUser);
+        return ResponseEntity.ok("User unfollowed successfully.");
+    }
+
+    @GetMapping("/{userId}/followers")
+    public ResponseEntity<List<Follower>> getFollowers(@PathVariable Integer userId) {
+        User user = userService.findUserById(userId);
+        List<Follower> followers = followService.getFollowers(user);
+        return ResponseEntity.ok(followers);
+    }
+
+    @GetMapping("/{userId}/followings")
+    public ResponseEntity<List<Following>> getFollowings(@PathVariable Integer userId) {
+        User user = userService.findUserById(userId);
+        List<Following> followings = followService.getFollowings(user);
+        return ResponseEntity.ok(followings);
     }
     
     @ExceptionHandler(DuplicateUserException.class)

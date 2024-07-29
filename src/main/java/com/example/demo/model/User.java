@@ -1,9 +1,11 @@
 package com.example.demo.model;
 
 import java.time.LocalDate;
-
 import org.springframework.format.annotation.DateTimeFormat;
+import java.util.List;
 
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 
@@ -62,6 +65,19 @@ public class User {
 	@JoinColumn(name = "auth_id")
 	private Auth auth;
 
+	// ----------XT-----------------
+	@OneToMany(mappedBy = "followedUser", cascade = CascadeType.ALL)
+	private List<Follower> followers;
+
+	@OneToMany(mappedBy = "followingUser", cascade = CascadeType.ALL)
+	private List<Following> followings;
+
+	@OneToMany(mappedBy = "banUser", cascade = CascadeType.ALL)
+	private List<BanHistory> banHistories;
+
+	@OneToMany(mappedBy = "notificationUser", cascade = CascadeType.ALL)
+	private List<Notification> notifications;
+
 	public User() {
 	}
 
@@ -81,7 +97,7 @@ public class User {
 		this.phoneNum = phoneNum;
 		this.joinDate = joinDate;
 	}
-
+	
 	// getter and setter
 
 	public Integer getId() {
@@ -90,6 +106,30 @@ public class User {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public String getGender() {
@@ -132,38 +172,6 @@ public class User {
 		this.blockList = blockList;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public Role getRole() {
-		return role;
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
 	public String getPassword() {
 		return password;
 	}
@@ -188,6 +196,14 @@ public class User {
 		this.joinDate = joinDate;
 	}
 
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
+	}
+
 	public Auth getAuth() {
 		return auth;
 	}
@@ -195,4 +211,37 @@ public class User {
 	public void setAuth(Auth auth) {
 		this.auth = auth;
 	}
+
+	public List<Follower> getFollowers() {
+		return followers;
+	}
+
+	public void setFollowers(List<Follower> followers) {
+		this.followers = followers;
+	}
+
+	public List<Following> getFollowings() {
+		return followings;
+	}
+
+	public void setFollowings(List<Following> followings) {
+		this.followings = followings;
+	}
+
+	public List<BanHistory> getBanHistories() {
+		return banHistories;
+	}
+
+	public void setBanHistories(List<BanHistory> banHistories) {
+		this.banHistories = banHistories;
+	}
+
+	public List<Notification> getNotifications() {
+		return notifications;
+	}
+
+	public void setNotifications(List<Notification> notifications) {
+		this.notifications = notifications;
+	}
+
 }

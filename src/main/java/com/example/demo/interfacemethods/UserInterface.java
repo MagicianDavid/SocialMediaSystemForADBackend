@@ -14,7 +14,7 @@ public interface UserInterface {
 	void deleteUserById(Integer id);
 	void banUserById(Integer id);
 	User updateUser(Integer id, User user);
-	
+
 	//Check user
 	User authenicate (String username, String pwd);
 	User registerUser(User user);
