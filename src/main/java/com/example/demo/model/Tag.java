@@ -1,11 +1,14 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -15,14 +18,16 @@ public class Tag {
 		@GeneratedValue(strategy=GenerationType.IDENTITY)
 		private int id;
 		
-		private String tag;
+		private String tags;
 		
-		@ManyToOne
-		@JoinColumn(name="tags")
-		private Post post;
+		@OneToOne
+	    @JoinColumn(name = "post_id")
+	    @JsonBackReference(value = "post-tag")
+	    private Post post;
 		
-		@ManyToOne
+		@OneToOne
 		@JoinColumn(name="Comment_id")
+	    @JsonBackReference(value = "comment-tag")
 		private Comments comments;
 		
 		@ManyToOne
@@ -35,7 +40,7 @@ public class Tag {
 		
 	public Tag() {}
 	public Tag(String tag,Boolean identity,String remark) {
-		this.tag=tag;
+		this.tags=tag;
 		this.identity=identity;
 		this.remark=remark;
 	}
@@ -46,13 +51,17 @@ public class Tag {
 		this.id = id;
 	}
 	public String getTag() {
-		return tag;
+		return tags;
 	}
-	public void setTag(String tag) {
-		this.tag = tag;
+	public void setTag(String tags) {
+		this.tags = tags;
 	}
+	
 	public Post getPost() {
 		return post;
+	}
+	public void setPost(Post post) {
+		this.post = post;
 	}
 	
 	public Comments getComments() {
@@ -73,7 +82,7 @@ public class Tag {
 	}
 	@Override
 	public String toString() {
-		return "Tag [id=" + id + ", tag=" + tag + ", post=" + post + ", comments=" + comments + ", identity=" + identity
+		return "Tag [id=" + id + ", tag=" + tags + ", post=" + post + ", comments=" + comments + ", identity=" + identity
 				+ ", remark=" + remark + "]";
 	}
 

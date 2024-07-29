@@ -2,7 +2,10 @@ package com.example.demo.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class Post {
@@ -25,18 +29,18 @@ public class Post {
 	private Boolean status;
 	private int likes;
 	
-	@OneToMany(mappedBy="post")
+	@JsonIgnore
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Comments>comments;
 	
 	@ManyToOne
 	@JoinColumn(name="User_id")
 	private Employee user;
 	
-	@OneToMany(mappedBy="post")
-	private List<Tag> tags;
-	
-	
-	
+	@OneToOne(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "post-tag")
+	private Tag tag;
+	 
 	public Post() {}
 	public Post(String imageUrl,String content,String timeStamp,Boolean visibility,Boolean status,int likes) {
 		this.imageUrl=imageUrl;
@@ -101,18 +105,18 @@ public class Post {
 	public void setUser(Employee user) {
 		this.user = user;
 	}
-	public List<Tag> getTag() {
-		return tags;
+	public Tag getTag() {
+		return tag;
 	}
-	public void setTag(List<Tag> tags) {
-		this.tags = tags;
+	public void setTag(Tag tags) {
+		this.tag = tags;
 	}
 	
-	@Override
-	public String toString() {
-		return "Post [id=" + id + ", imageUrl=" + imageUrl + ", content=" + content + ", timeStamp=" + timeStamp
-				+ ", visibility=" + visibility + ", status=" + status + ", likes=" + likes + ", comments=" + comments
-				+ ", user=" + user + ", tag=" + tags + "]";
-	}
+//	@Override
+//	public String toString() {
+//		return "Post [id=" + id + ", imageUrl=" + imageUrl + ", content=" + content + ", timeStamp=" + timeStamp
+//				+ ", visibility=" + visibility + ", status=" + status + ", likes=" + likes + ", comments=" + comments
+//				+ ", user=" + user + ", tag=" + tag + "]";
+//	}
 
 }

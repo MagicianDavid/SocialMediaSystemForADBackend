@@ -6,8 +6,7 @@ import com.example.demo.model.Post;
 
 public interface PostsInterface {
 
-	List<Post> findAllPosts();
+	List<Post> findAllPostsDateDESC();
 	Post findPostById (Integer id);
-	
 	Post savePost (Post post);
 }

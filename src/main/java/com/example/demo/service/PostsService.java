@@ -18,8 +18,8 @@ public class PostsService implements PostsInterface{
 	private PostRepository postRepository;
 	
 	@Override
-	public List<Post> findAllPosts() {
-		return postRepository.findAll();
+	public List<Post> findAllPostsDateDESC() {
+		return postRepository.findAllPostsOrderByDateDesc();
 	}
 
 	@Override
