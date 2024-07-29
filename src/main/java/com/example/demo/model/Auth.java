@@ -27,7 +27,7 @@ public class Auth {
 	private String menuViewJason;
 
 	@OneToMany(mappedBy = "auth", cascade = CascadeType.ALL)
-	private List<Employee> employees;
+	private List<User> users;
 
 	public Auth() {
 	}
