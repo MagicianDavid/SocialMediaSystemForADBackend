@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,11 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dto.PCMsgDetail;
 import com.example.demo.interfacemethods.PCMsgInterface;
-import com.example.demo.interfacemethods.UserInterface;
 import com.example.demo.model.PCMsg;
+import com.example.demo.model.User;
+import com.example.demo.model.Following;
 import com.example.demo.model.Like;
 import com.example.demo.repository.LikeRepository;
 import com.example.demo.repository.PCMsgRepository;
+import com.example.demo.repository.UserRepository;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,7 +26,7 @@ public class PCMsgService implements PCMsgInterface{
 	private PCMsgRepository pcmsgRepository;
 	
 	@Autowired
-	private UserInterface userService;
+	private UserRepository userRepository;
 	
 	@Autowired
 	private LikeRepository likeRepository;
@@ -67,16 +71,21 @@ public class PCMsgService implements PCMsgInterface{
 	}
 	
 	@Override
-	// TODO: not finished yet
 	public List<PCMsg> findAllFollowingPostsByUserId(Integer userId) {
-		// need to consider user blockList
-		String blockList = userService.findUserById(userId).getBlockList();
-		if (blockList.isEmpty() || blockList.isBlank() || blockList == null) {
-			return pcmsgRepository.findAllPostsByUserIdByDateDesc(userId);
-		} else {
-			
-		}
-		return null;
+		User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID:" + userId));
+		List<Following> followings = user.getFollowings();
+		String blockList = user.getBlockList();
+
+        List<Integer> followingUserIds = followings.stream()
+                .map(following -> following.getFollowingUser().getId())
+                .collect(Collectors.toList());
+
+        List<Integer> blockedUserIds = Arrays.stream(blockList.split(","))
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+
+        return pcmsgRepository.findAllFollowingPostsByUserId(followingUserIds, blockedUserIds);
 	}
 	
 	@Override

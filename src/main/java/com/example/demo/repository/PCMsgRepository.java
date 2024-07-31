@@ -19,6 +19,10 @@ public interface PCMsgRepository extends JpaRepository<PCMsg,Integer> {
     @Query("SELECT p FROM PCMsg p WHERE p.sourceId = :pcmsgId")
     List<PCMsg> findAllFirstLayerChildren(@Param("pcmsgId") int pcmsgId);
     
+    @Query("SELECT p FROM PCMsg p WHERE p.sourceId IS NULL AND p.user.id IN :followingUserIds AND p.user.id NOT IN :blockedUserIds")
+    List<PCMsg> findAllFollowingPostsByUserId(@Param("followingUserIds") List<Integer> followingUserIds, 
+                                              @Param("blockedUserIds") List<Integer> blockedUserIds);
+    
 //    @Query("SELECT p FROM PCMsg p WHERE p.sourceId = :sourceId")
 //    List<PCMsg> findByPostId(@Param("sourceId") int sourceId);
 }

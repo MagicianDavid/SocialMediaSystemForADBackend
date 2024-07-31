@@ -173,14 +173,16 @@ public class UserService implements UserInterface {
         if (blockList == null || blockList.isEmpty()) {
             blockList = blockUserId.toString();
         } else {
-        	blockList += "," + blockUserId;
-        }
-        if (blockList != null && !blockList.isEmpty()) {
         	List<String> blockIds = new ArrayList<>(Arrays.asList(blockList.split(",")));
-            blockIds.remove(blockUserId.toString());
-            curUser.setBlockList(String.join(",", blockIds));
+        	if (blockIds.contains(blockUserId.toString())) {
+        		blockIds.remove(blockUserId.toString());
+        		blockList = String.join(",", blockIds);
+        	} else {            
+            	blockList += "," + blockUserId;
+            }
         }
         curUser.setBlockList(blockList);
+        userRepository.save(curUser);
 	}
 
 	@Override
