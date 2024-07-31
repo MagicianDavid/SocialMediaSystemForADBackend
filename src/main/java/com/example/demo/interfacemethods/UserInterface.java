@@ -11,8 +11,8 @@ public interface UserInterface {
 	User findUserById(Integer id);	
 	
 	User saveUser(User user);
-	void deleteUserById(Integer id);
-	void banUserById(Integer id);
+	void updateUserStatusById(Integer id,String status);
+	void blockUserById(Integer UserId, Integer blockId);
 	User updateUser(Integer id, User user);
 
 	//Check user

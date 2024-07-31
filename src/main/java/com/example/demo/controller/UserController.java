@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.LoginRequest;
@@ -97,15 +98,15 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @PutMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable("id") Integer id) {
-        userService.deleteUserById(id);
+    @PutMapping("/updateStatus/{id}")
+    public ResponseEntity<Void> updateUserStatus(@PathVariable("id") Integer id, @RequestParam("status") String status) {
+        userService.updateUserStatusById(id, status);
         return ResponseEntity.noContent().build();
     }
     
-    @PutMapping("/ban/{id}")
-    public ResponseEntity<Void> baneUser(@PathVariable("id") Integer id) {
-        userService.banUserById(id);
+    @PutMapping("{UserId}/block/{blockId}")
+    public ResponseEntity<Void> blockUser(@PathVariable("UserId") Integer UserId, @PathVariable("blockId") Integer blockId) {
+        userService.blockUserById(UserId,blockId);
         return ResponseEntity.noContent().build();
     }
 

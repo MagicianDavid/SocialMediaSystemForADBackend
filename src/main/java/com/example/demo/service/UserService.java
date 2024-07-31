@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,6 +57,7 @@ public class UserService implements UserInterface {
 		try {
 			User curUser = findUserById(id);
 			curUser.setStatus(operation);
+			userRepository.save(curUser);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to " + operation + " user with ID: " + id, e);
 		}
@@ -73,7 +76,12 @@ public class UserService implements UserInterface {
     			throw new RuntimeException("Failed to decrypt pwd with user " + username, e);
     		}
         	if(isMathched) {
-            	return checkUser;
+        		// check user status if not active we don't allow this user log in
+        		if (checkUser.getStatus().equals("active")) {
+                	return checkUser;	
+        		} else {
+        			throw new RuntimeException("No longer active user!");
+        		}
             } else {
             	throw new RuntimeException("Wrong username or pwd!");
             }
@@ -146,19 +154,33 @@ public class UserService implements UserInterface {
 		handleDuplicateUser(user);
 		return userRepository.save(user);
 	}
-
+	
 	@Override
 	@Transactional(readOnly = false)
-	public void deleteUserById(Integer id) {
-		// actually here we do not remove user from our database
-		// we change their status into 'delete' so that it's been hidden
-		changeUserStatusById(id,"delete");
+	public void updateUserStatusById(Integer id, String status) {
+		changeUserStatusById(id,status);
 	}
 	
 	@Override
 	@Transactional(readOnly = false)
-	public void banUserById(Integer id) {
-		changeUserStatusById(id,"ban");
+	public void blockUserById(Integer UserId, Integer blockUserId) {
+		User curUser = findUserById(UserId);
+		// to check whether we have this blockUser
+		findUserById(blockUserId);
+        
+        String blockList = curUser.getBlockList();
+		// check whether blockList contains this id
+        if (blockList == null || blockList.isEmpty()) {
+            blockList = blockUserId.toString();
+        } else {
+        	blockList += "," + blockUserId;
+        }
+        if (blockList != null && !blockList.isEmpty()) {
+        	List<String> blockIds = new ArrayList<>(Arrays.asList(blockList.split(",")));
+            blockIds.remove(blockUserId.toString());
+            curUser.setBlockList(String.join(",", blockIds));
+        }
+        curUser.setBlockList(blockList);
 	}
 
 	@Override
@@ -181,6 +203,6 @@ public class UserService implements UserInterface {
 		curUser.setAuth(user.getAuth());
 		curUser.setRole(user.getRole());
 		curUser.setJoinDate(user.getJoinDate());
-		return curUser;
+		return userRepository.save(curUser);
 	}
 }

@@ -64,6 +64,9 @@ public class User {
 	@ManyToOne
 	@JoinColumn(name = "auth_id")
 	private Auth auth;
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private List<Report> reports;
 
 	// ----------XT-----------------
 	@OneToMany(mappedBy = "followedUser", cascade = CascadeType.ALL)
@@ -212,6 +215,14 @@ public class User {
 		this.auth = auth;
 	}
 
+	public List<Report> getReports() {
+		return reports;
+	}
+
+	public void setReports(List<Report> reports) {
+		this.reports = reports;
+	}
+	
 	public List<Follower> getFollowers() {
 		return followers;
 	}
