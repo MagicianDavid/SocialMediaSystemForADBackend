@@ -139,7 +139,13 @@ public class PCMsgService implements PCMsgInterface{
 		List<PCMsg> findComments = findAllFirstLayerChildren(postId);
 		return new PCMsgDetail(findPost,findComments);
 	}
-
+	
+	@Override
+	public boolean hasUserLikedPost(int userId, int postId){
+        return likeRepository.existsByUserIdAndPCMsgId(userId, postId);
+	}
+	
+	
 	@Override
 	@Transactional(readOnly = false)
 	public PCMsg savePCMsgt(PCMsg pcmsg) {
@@ -174,4 +180,6 @@ public class PCMsgService implements PCMsgInterface{
 	public void deletePCMsgById(Integer id) {
 		deletePCMsgAndChildren(id);
 	}
+
+
 }

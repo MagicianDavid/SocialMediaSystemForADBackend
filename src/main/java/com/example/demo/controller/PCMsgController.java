@@ -50,7 +50,7 @@ public class PCMsgController {
         return ResponseEntity.ok(postList);
     }
 	
-	// find all posts for this users' following and exclude blockList
+	// find all posts for this users' following and exclude blockList -Haven't Used
 	@GetMapping("/findAllFollowingPostsByUserId/{id}")
     public ResponseEntity<List<PCMsg>> getAllFollowingPostsByUserId(@PathVariable("id") Integer id) {
 		List<PCMsg> postList = pcmsgService.findAllFollowingPostsByUserId(id);
@@ -82,6 +82,13 @@ public class PCMsgController {
         Integer totalLikes = pcmsgService.countLikesByPCMsgId(pcmsgId);
         return ResponseEntity.ok(totalLikes);
     }
+ 	
+ 	//hasUserLikePost
+ 	 @GetMapping("/{postId}/likes/{userId}")
+     public ResponseEntity<Boolean> hasUserLikedPost(@PathVariable int postId, @PathVariable int userId) {
+         boolean isLiked = pcmsgService.hasUserLikedPost(userId, postId);
+         return new ResponseEntity<>(isLiked, HttpStatus.OK);
+     }
     
  	// TODO: post sourceId should be null
  	// and the tag logic haven't done

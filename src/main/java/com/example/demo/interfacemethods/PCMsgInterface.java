@@ -26,6 +26,9 @@ public interface PCMsgInterface {
 	// Return Post & its first layer comments by postId
 	PCMsgDetail findPCMsgDetailById (Integer postId);
 	
+	// Return If User like the post
+	boolean hasUserLikedPost(int userId, int postId);
+
 	// CRUD
 	PCMsg savePCMsgt (PCMsg pcmsg);
 	PCMsg updatePCMsg (Integer id, PCMsg pcmsg);
