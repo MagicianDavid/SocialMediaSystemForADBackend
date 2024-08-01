@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,10 +16,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.PCMsgDetail;
+import com.example.demo.dto.SearchResult;
 import com.example.demo.interfacemethods.PCMsgInterface;
 import com.example.demo.interfacemethods.TagInterface;
 import com.example.demo.model.PCMsg;
 import com.example.demo.model.Tag;
+import com.example.demo.model.User;
 import com.example.demo.service.TaggingService;
 
 @RestController
@@ -43,7 +44,28 @@ public class PCMsgController {
         return ResponseEntity.ok(postList);
     }
 	
-	// find by UserId, it for user that log in platform.
+	// return all posts order by like & comments
+	@GetMapping("/findHotPosts")
+    public ResponseEntity<List<PCMsg>> getHotPosts() {
+        List<PCMsg> postList = pcmsgService.findAllHotPosts();
+        return ResponseEntity.ok(postList);
+    }
+	
+	// this is for the search result page, it will return three lists
+	// 1st is the all_matched_following_user_list
+	// 2nd is the all_matched_user_list
+	// 3rd is the all_matched_post_list(post_user or post content)
+	@GetMapping("/searchBarResult/")
+    public ResponseEntity<SearchResult> getSearchBarResult(@RequestParam("keyword") String k) {
+        List<User> all_matched_following_user_list = pcmsgService.findAllSearchFollowingUser(k);
+        List<User> all_matched_user_list = pcmsgService.findAllSearchUser(k);
+        List<PCMsg> all_matched_post_list = pcmsgService.findAllSearchPostsOrderByDateDESC(k);
+        
+        SearchResult searchResult = new SearchResult(all_matched_following_user_list,all_matched_user_list,all_matched_post_list);
+        return ResponseEntity.ok(searchResult);
+    }
+		
+	// find by UserId, it is for user that log in platform.
 	@GetMapping("/findAllPostsByUserId/{id}")
     public ResponseEntity<List<PCMsg>> getAllPostsByUserId(@PathVariable("id") Integer id) {
         List<PCMsg> postList = pcmsgService.findAllPostsByUserId(id);
@@ -126,15 +148,30 @@ public class PCMsgController {
 		return ResponseEntity.status(HttpStatus.OK).body(updatedPCMsg);
     }
 	
-	// update pcmsgStatus 
+	// update PCMsg Status  
+	// need to transfer status(operation) in the request
 	@PutMapping("updatePCMsgStatus/{pcmsgId}")
     public ResponseEntity<Void> updatePCMsgStatus(@PathVariable("pcmsgId")Integer pcmsgId, @RequestParam("status") String status) {
 		pcmsgService.updatePCMsgStatusById(pcmsgId, status);
 		return ResponseEntity.noContent().build();
     }
 	
-	// delete post or comment and all its children
-	@DeleteMapping("/delete/{id}")
+	// hide post or comment
+	@PutMapping("/show/{id}")
+    public ResponseEntity<Void> showPCMsg(@PathVariable("id") Integer id) {
+		pcmsgService.showPCMsgById(id);
+        return ResponseEntity.noContent().build();
+    }
+	
+	// hide post or comment
+	@PutMapping("/hide/{id}")
+    public ResponseEntity<Void> hidePCMsg(@PathVariable("id") Integer id) {
+		pcmsgService.hidePCMsgById(id);
+        return ResponseEntity.noContent().build();
+    }
+	
+	// delete post or comment
+	@PutMapping("/delete/{id}")
     public ResponseEntity<Void> deletePCMsg(@PathVariable("id") Integer id) {
 		pcmsgService.deletePCMsgById(id);
         return ResponseEntity.noContent().build();

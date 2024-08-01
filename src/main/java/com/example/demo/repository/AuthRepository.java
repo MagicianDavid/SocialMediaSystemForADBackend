@@ -12,4 +12,6 @@ public interface AuthRepository  extends JpaRepository<Auth,Integer>{
 	
 	@Query("SELECT a FROM Auth a JOIN a.users u WHERE u.id = :userId")
 	public Auth findByUserId(Integer userId);
+	
+	public Auth findByRank(String rank);
 }

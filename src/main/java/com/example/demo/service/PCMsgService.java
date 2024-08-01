@@ -1,7 +1,9 @@
 package com.example.demo.service;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,14 +53,32 @@ public class PCMsgService implements PCMsgInterface{
         return count;
     }
 	
-	// delete itself and its children using recursion
-	private void deletePCMsgAndChildren(Integer pcmsgId) {
+	// update itself status and its children using recursion
+	private void updateStatusOfPCMsgAndChildren(Integer pcmsgId, String operation) {
         List<PCMsg> children = pcmsgRepository.findAllFirstLayerChildren(pcmsgId);
         for (PCMsg child : children) {
-            deletePCMsgAndChildren(child.getId());
+        	updateStatusOfPCMsgAndChildren(child.getId(),operation);
         }
-        pcmsgRepository.deleteById(pcmsgId);
+    	// actually not delete from database ,just change its status into delete
+        changePCMsgStatusById(pcmsgId,operation);
     }
+	
+	private void upgradePCMsgStatusById (Integer id, String operation) {
+		PCMsg curPCMsg = findPCMsgById(id);
+		// if this PCMsg is a post then we set all of its children's status into delete/hide/show
+		if (curPCMsg.getSourceId() == null) {
+			updateStatusOfPCMsgAndChildren(id,operation);
+		} else {
+			// if this PCMsg is a comment then we set itself status into delete/hide/show
+			// do nothing to its children
+			changePCMsgStatusById(id,operation);
+		}
+	}
+	
+	@Override
+	public List<PCMsg> findAllPosts() {
+		return pcmsgRepository.findAll();
+	}
 	
 	@Override
 	public List<PCMsg> findAllPCMsgDateDESC() {
@@ -89,8 +109,45 @@ public class PCMsgService implements PCMsgInterface{
 	}
 	
 	@Override
-	public List<PCMsg> findAllPosts() {
-		return pcmsgRepository.findAll();
+	public List<PCMsg> findAllHotPosts() {
+		List<PCMsg> allPosts = findAllPosts();
+		
+		// Create a map to store post and its popularity score
+        Map<PCMsg, Integer> postPopularityMap = new HashMap<>();
+
+        for (PCMsg post : allPosts) {
+            int likesCount = countLikesByPCMsgId(post.getId());
+            int commentsCount = countTotalCommentsByPostId(post.getId());
+            // can adjust the weight of likes and comments, i simply add them up
+            int popularityScore = likesCount + commentsCount; 
+            postPopularityMap.put(post, popularityScore);
+        }
+
+        // Sort posts by popularity score in descending order
+        List<PCMsg> sortedPosts = postPopularityMap.entrySet().stream()
+                .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+        return sortedPosts;
+	}
+
+	@Override
+	public List<User> findAllSearchFollowingUser(String keyword) {
+		return userRepository.findAllFollowingByUserName(keyword);
+	}
+
+	@Override
+	public List<User> findAllSearchUser(String keyword) {
+		return userRepository.findAllByUserName(keyword);
+	}
+
+	@Override
+	public List<PCMsg> findAllSearchPostsOrderByDateDESC(String keyword) {
+		if (keyword.isBlank() || keyword.isEmpty()) {
+			throw new RuntimeException("can not enter empty string!");
+		}
+		return pcmsgRepository.SearchPostsByContentAndUserNameOrderByDateDesc(keyword);
 	}
 
 	@Override
@@ -172,14 +229,24 @@ public class PCMsgService implements PCMsgInterface{
 	@Override
 	@Transactional(readOnly = false)
 	public void updatePCMsgStatusById(Integer id, String status) {
-		changePCMsgStatusById(id,status);
+		upgradePCMsgStatusById(id,status);
+	}
+	
+	@Override
+	@Transactional(readOnly = false)
+	public void showPCMsgById(Integer id) {
+		upgradePCMsgStatusById(id,"show");
 	}
 	
 	@Override
 	@Transactional(readOnly = false)
 	public void deletePCMsgById(Integer id) {
-		deletePCMsgAndChildren(id);
+		upgradePCMsgStatusById(id,"delete");
 	}
 
-
+	@Override
+	@Transactional(readOnly = false)
+	public void hidePCMsgById(Integer id) {
+		upgradePCMsgStatusById(id,"hide");
+	}
 }

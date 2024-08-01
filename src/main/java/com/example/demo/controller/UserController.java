@@ -104,6 +104,29 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
     
+    // the following two API are for the updating socialScores
+    // the adjustScore is the one to be added or minus from the current score
+    // add user social score
+    @PutMapping("/addSocialScore/{id}")
+    public ResponseEntity<Void> addUserSocialScore(@PathVariable("id") Integer id, @RequestParam("score") Integer adjustScore) {
+    	userService.updateUserSocialScoresById(id, "add",adjustScore);
+    	return ResponseEntity.noContent().build();
+    }
+    
+    // minus user social score
+    @PutMapping("/minusSocialScore/{id}")
+    public ResponseEntity<Void> minusUserSocialScore(@PathVariable("id") Integer id, @RequestParam("score") Integer adjustScore) {
+        userService.updateUserSocialScoresById(id, "minus",adjustScore);
+        return ResponseEntity.noContent().build();
+    }
+    
+    // check user social score and change its status & authorization accordingly
+    @PutMapping("/checkUserSocialScore/{id}")
+    public ResponseEntity<Void> checkUserSocialScoreThenUpdateStatusAndAuth(@PathVariable("id") Integer id) {
+        userService.checkUserSocialScoreThenUpdateStatusAndAuth(id);
+        return ResponseEntity.noContent().build();
+    }
+    
     @PutMapping("{UserId}/block/{blockId}")
     public ResponseEntity<Void> blockUser(@PathVariable("UserId") Integer UserId, @PathVariable("blockId") Integer blockId) {
         userService.blockUserById(UserId,blockId);

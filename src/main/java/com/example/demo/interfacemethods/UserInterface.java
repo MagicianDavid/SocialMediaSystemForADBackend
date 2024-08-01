@@ -12,10 +12,12 @@ public interface UserInterface {
 	
 	User saveUser(User user);
 	void updateUserStatusById(Integer id,String status);
+	void updateUserSocialScoresById(Integer id, String operation, Integer adjustScore);
 	void blockUserById(Integer UserId, Integer blockId);
 	User updateUser(Integer id, User user);
 
 	//Check user
 	User authenicate (String username, String pwd);
 	User registerUser(User user);
+	User checkUserSocialScoreThenUpdateStatusAndAuth(Integer userId);
 }

@@ -163,6 +163,26 @@ public class UserService implements UserInterface {
 	
 	@Override
 	@Transactional(readOnly = false)
+	public void updateUserSocialScoresById(Integer id, String operation,Integer adjustScore) {
+		try {
+			User curUser = findUserById(id);
+			Integer curScore = curUser.getSocialScore();
+			if (operation == "add") {
+				curScore+=adjustScore;
+			} else if (operation == "minus") {
+				curScore-=adjustScore;
+			}
+			if (curScore > 120) curScore = 120;
+			if (curScore < 0) curScore = 0;
+			curUser.setSocialScore(curScore);
+			userRepository.save(curUser);
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to " + operation + " user socialScore with ID: " + id, e);
+		}
+	}
+	
+	@Override
+	@Transactional(readOnly = false)
 	public void blockUserById(Integer UserId, Integer blockUserId) {
 		User curUser = findUserById(UserId);
 		// to check whether we have this blockUser
@@ -205,6 +225,52 @@ public class UserService implements UserInterface {
 		curUser.setAuth(user.getAuth());
 		curUser.setRole(user.getRole());
 		curUser.setJoinDate(user.getJoinDate());
+		return userRepository.save(curUser);
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public User checkUserSocialScoreThenUpdateStatusAndAuth(Integer userId) {
+		User curUser = findUserById(userId);
+		Integer curSocialScore = curUser.getSocialScore();
+		switch((curSocialScore + 9) / 10) {
+			case 12:
+				// 111-120
+//				authRepository.findByRank("L12");
+				break;
+			case 11:
+				// 101-110
+				break;
+			case 10:
+				// 91-100
+				break;
+			case 9:
+				// 81-90
+				break;
+			case 8:
+				// 71-80
+				break;
+			case 7:
+				// 61-70
+				break;
+			case 6:
+			case 5:
+			case 4:
+			case 3:
+			case 2:
+			case 1:
+				// 1-60
+				
+			case 0:
+				curUser.setStatus("ban");
+//	    		curUser.setAuth();
+	        default:
+	            // default setting user status to "active" & socialScore to 120
+	    		curUser.setStatus("active");
+	    		curUser.setAuth(curUser.getAuth());
+	    		curUser.setSocialScore(120);
+	            break;
+		}
 		return userRepository.save(curUser);
 	}
 }
