@@ -204,7 +204,24 @@ public class UserService implements UserInterface {
         curUser.setBlockList(blockList);
         userRepository.save(curUser);
 	}
+	
+	@Override
+	@Transactional(readOnly = false)
+	public void unblockUserById(Integer UserId, Integer unblockUserId) {
+		User curUser = findUserById(UserId);
+		findUserById(unblockUserId);
 
+		String blockList = curUser.getBlockList();
+	   	if (blockList != null && !blockList.isEmpty()) {
+	   		List<String> blockIds = new ArrayList<>(Arrays.asList(blockList.split(",")));
+	   		blockIds.remove(unblockUserId.toString());
+	    	blockList = String.join(",", blockIds);
+	    	curUser.setBlockList(blockList);
+	    	userRepository.save(curUser);
+	   	}
+	}
+	
+	
 	@Override
 	@Transactional(readOnly = false)
 	public User updateUser(Integer id, User user) {

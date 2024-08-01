@@ -132,6 +132,12 @@ public class UserController {
         userService.blockUserById(UserId,blockId);
         return ResponseEntity.noContent().build();
     }
+    
+    @PutMapping("{UserId}/unblock/{unblockId}")
+    public ResponseEntity<Void> unblockUser(@PathVariable("UserId") Integer UserId, @PathVariable("unblockId") Integer unblockId) {
+        userService.unblockUserById(UserId, unblockId);
+        return ResponseEntity.noContent().build();
+    }
 
     @PostMapping("/{followerId}/follow/{followedUserId}")
     public ResponseEntity<String> followUser(@PathVariable Integer followerId, @PathVariable Integer followedUserId) {
