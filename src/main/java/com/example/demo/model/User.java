@@ -2,6 +2,9 @@ package com.example.demo.model;
 
 import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.util.List;
 
 
@@ -72,11 +75,13 @@ public class User {
 	private List<Report> reports;
 
 	// ----------XT-----------------
-	@OneToMany(mappedBy = "followedUser", cascade = CascadeType.ALL)
-	private List<Follower> followers;
+	@OneToMany(mappedBy = "followedUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Follower> followers;
 
-	@OneToMany(mappedBy = "followingUser", cascade = CascadeType.ALL)
-	private List<Following> followings;
+    @OneToMany(mappedBy = "followingUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Following> followings;
 
 	@OneToMany(mappedBy = "banUser", cascade = CascadeType.ALL)
 	private List<BanHistory> banHistories;

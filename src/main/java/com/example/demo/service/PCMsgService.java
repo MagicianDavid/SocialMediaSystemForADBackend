@@ -77,7 +77,8 @@ public class PCMsgService implements PCMsgInterface{
 	
 	@Override
 	public List<PCMsg> findAllPosts() {
-		return pcmsgRepository.findAll();
+		//i edited this, previous it is reeturn comment too.
+		return pcmsgRepository.findAllPostsOnly();
 	}
 	
 	@Override

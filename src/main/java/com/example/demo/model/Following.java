@@ -2,6 +2,8 @@ package com.example.demo.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,6 +20,7 @@ public class Following {
 	
 	@ManyToOne
 	@JoinColumn(name = "Following Id")
+    @JsonBackReference
 	private User followingUser;
 	
 	@Column (name = "Following Time")
@@ -48,6 +51,6 @@ public class Following {
 	public void setFollowingTime(LocalDateTime followingTime) {
 		this.followingTime = followingTime;
 	}
-
 	
+  
 }
