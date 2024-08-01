@@ -15,6 +15,7 @@ public interface UserInterface {
 	void updateUserStatusById(Integer id, UserStatus status);
 	void updateUserSocialScoresById(Integer id, String operation, Integer adjustScore);
 	void blockUserById(Integer UserId, Integer blockId);
+	void unblockUserById(Integer UserId, Integer unblockId);
 	User updateUser(Integer id, User user);
 
 	//Check user
