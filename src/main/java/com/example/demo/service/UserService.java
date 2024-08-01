@@ -14,6 +14,7 @@ import com.example.demo.exception.DuplicateUserException;
 import com.example.demo.interfacemethods.UserInterface;
 import com.example.demo.model.Auth;
 import com.example.demo.model.User;
+import com.example.demo.model.UserStatus;
 import com.example.demo.model.Role;
 import com.example.demo.repository.AuthRepository;
 import com.example.demo.repository.RoleRepository;
@@ -53,7 +54,7 @@ public class UserService implements UserInterface {
 		}
 	}
 	
-	private void changeUserStatusById(Integer id, String operation) {
+	private void changeUserStatusById(Integer id, UserStatus operation) {
 		try {
 			User curUser = findUserById(id);
 			curUser.setStatus(operation);
@@ -122,7 +123,7 @@ public class UserService implements UserInterface {
 		// set the default socialScore to 120
 		user.setSocialScore(120);
 		// set the default status to 'active'
-		user.setStatus("active");
+		user.setStatus(UserStatus.active);
 		return userRepository.save(user);
 	}
 
@@ -157,7 +158,7 @@ public class UserService implements UserInterface {
 	
 	@Override
 	@Transactional(readOnly = false)
-	public void updateUserStatusById(Integer id, String status) {
+	public void updateUserStatusById(Integer id, UserStatus status) {
 		changeUserStatusById(id,status);
 	}
 	
@@ -228,48 +229,29 @@ public class UserService implements UserInterface {
 		return userRepository.save(curUser);
 	}
 
+	private void changeUserAuthAndStatus(User user, Auth auth, UserStatus status) {
+		try {
+			user.setStatus(status);
+			user.setAuth(auth);
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to changeUserAuthAndStatus to user with ID: " + user.getId(), e);
+		}
+	}
+	
 	@Override
 	@Transactional(readOnly = false)
 	public User checkUserSocialScoreThenUpdateStatusAndAuth(Integer userId) {
 		User curUser = findUserById(userId);
 		Integer curSocialScore = curUser.getSocialScore();
-		switch((curSocialScore + 9) / 10) {
-			case 12:
-				// 111-120
-//				authRepository.findByRank("L12");
-				break;
-			case 11:
-				// 101-110
-				break;
-			case 10:
-				// 91-100
-				break;
-			case 9:
-				// 81-90
-				break;
-			case 8:
-				// 71-80
-				break;
-			case 7:
-				// 61-70
-				break;
-			case 6:
-			case 5:
-			case 4:
-			case 3:
-			case 2:
-			case 1:
-				// 1-60
-				
-			case 0:
-				curUser.setStatus("ban");
-//	    		curUser.setAuth();
-	        default:
-	            // default setting user status to "active" & socialScore to 120
-	    		curUser.setStatus("active");
-	    		curUser.setAuth(curUser.getAuth());
-	    		curUser.setSocialScore(120);
-	            break;
+		Integer curRank = (curSocialScore + 9) / 10;
+		// default set format of "FixedRank12"
+		Auth adjustAuth = authRepository.findByRank("FixedRank" + curRank );
+		// TODO: haven't implement ban for how long  
+		if (curRank == 0) {
+			// ban this user
+			changeUserAuthAndStatus(curUser,adjustAuth,UserStatus.ban);
+		} else {
+			changeUserAuthAndStatus(curUser,adjustAuth,UserStatus.active);
 		}
 		return userRepository.save(curUser);
 	}

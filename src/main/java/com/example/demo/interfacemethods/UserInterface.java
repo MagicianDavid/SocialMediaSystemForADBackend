@@ -3,6 +3,7 @@ package com.example.demo.interfacemethods;
 import java.util.List;
 
 import com.example.demo.model.User;
+import com.example.demo.model.UserStatus;
 
 public interface UserInterface {
 	List<User> findAllUsers();
@@ -11,7 +12,7 @@ public interface UserInterface {
 	User findUserById(Integer id);	
 	
 	User saveUser(User user);
-	void updateUserStatusById(Integer id,String status);
+	void updateUserStatusById(Integer id, UserStatus status);
 	void updateUserSocialScoresById(Integer id, String operation, Integer adjustScore);
 	void blockUserById(Integer UserId, Integer blockId);
 	User updateUser(Integer id, User user);

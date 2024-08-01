@@ -24,6 +24,7 @@ import com.example.demo.interfacemethods.UserInterface;
 import com.example.demo.model.Follower;
 import com.example.demo.model.Following;
 import com.example.demo.model.User;
+import com.example.demo.model.UserStatus;
 
 @RestController
 @RequestMapping("/api/user")
@@ -99,7 +100,7 @@ public class UserController {
     }
 
     @PutMapping("/updateStatus/{id}")
-    public ResponseEntity<Void> updateUserStatus(@PathVariable("id") Integer id, @RequestParam("status") String status) {
+    public ResponseEntity<Void> updateUserStatus(@PathVariable("id") Integer id, @RequestParam("status") UserStatus status) {
         userService.updateUserStatusById(id, status);
         return ResponseEntity.noContent().build();
     }

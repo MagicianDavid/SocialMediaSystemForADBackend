@@ -8,6 +8,8 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -38,8 +40,9 @@ public class User {
 	@Column(length = 35)
 	private String country;
 
+	@Enumerated(EnumType.STRING) // 或 EnumType.ORDINAL
 	@Column(length = 35)
-	private String status;
+	private UserStatus status;
 
 	@Min(value = 0, message = "Social score must be at least 0")
 	@Max(value = 120, message = "Social score must be at most 120")
@@ -85,7 +88,7 @@ public class User {
 	}
 
 	public User(String name, String email, Role role, Auth auth, String username, String password, String gender,
-			String country, String status, Integer socialScore, String blockList, String phoneNum, LocalDate joinDate) {
+			String country, UserStatus status, Integer socialScore, String blockList, String phoneNum, LocalDate joinDate) {
 		this.name = name;
 		this.email = email;
 		this.role = role;
@@ -151,11 +154,11 @@ public class User {
 		this.country = country;
 	}
 
-	public String getStatus() {
+	public UserStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(UserStatus status) {
 		this.status = status;
 	}
 
