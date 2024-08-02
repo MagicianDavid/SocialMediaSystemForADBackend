@@ -75,7 +75,9 @@ public class PCMsgController {
 	// find all posts for this users' following and exclude blockList -Haven't Used
 	@GetMapping("/findAllFollowingPostsByUserId/{id}")
     public ResponseEntity<List<PCMsg>> getAllFollowingPostsByUserId(@PathVariable("id") Integer id) {
-		List<PCMsg> postList = pcmsgService.findAllFollowingPostsByUserId(id);
+		//List<PCMsg> postList = pcmsgService.findAllFollowingPostsByUserId(id);
+		List<PCMsg> postList = pcmsgService.findAllPostsByUserId(id);
+
         return ResponseEntity.ok(postList);
     }
 	

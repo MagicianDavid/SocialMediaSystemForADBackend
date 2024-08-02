@@ -78,7 +78,7 @@ public class UserService implements UserInterface {
     		}
         	if(isMathched) {
         		// check user status if not active we don't allow this user log in
-        		if (checkUser.getStatus().equals("active")) {
+        		if (checkUser.getStatus().equals(UserStatus.active)) {
                 	return checkUser;	
         		} else {
         			throw new RuntimeException("No longer active user!");
