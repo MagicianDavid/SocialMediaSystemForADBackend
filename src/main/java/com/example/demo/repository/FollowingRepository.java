@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface FollowingRepository extends JpaRepository<Following, Integer> {
     List<Following> findByFollowingUserOrderByFollowingTimeDesc(User followingUser);
+//    List<Following> findByFollowingUser(User user);
+
 }
