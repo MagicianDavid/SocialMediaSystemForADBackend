@@ -8,12 +8,12 @@ import com.example.demo.model.Following;
 import com.example.demo.model.User;
 
 public interface FollowInterface {
-    void followUser(int follower, int followedUser);
-    void unfollowUser(int follower, int followedUser);
+    void followUser(User follower, User followedUser);
+    void unfollowUser(User follower, User followedUser);
     List<Follower> getFollowers(User user);
     List<Following> getFollowings(User user);
     
     
-	List<FollowList> getFollowers2(int user);
-	List<FollowList> getFollowings2(int user);
+	List<User> getFollowers2(User user);
+	List<User> getFollowings2(User user);
 }

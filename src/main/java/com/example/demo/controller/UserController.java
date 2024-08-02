@@ -141,33 +141,35 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    
+    
     @PostMapping("/{followerId}/follow/{followedUserId}")
     public ResponseEntity<String> followUser(@PathVariable Integer followerId, @PathVariable Integer followedUserId) {
-        //User follower = userService.findUserById(followerId);
-        //User followedUser = userService.findUserById(followedUserId);
-        followService.followUser(followerId, followedUserId);
+        User follower = userService.findUserById(followerId);
+        User followedUser = userService.findUserById(followedUserId);
+        followService.followUser(follower, followedUser);
         return ResponseEntity.ok("User followed successfully.");
     }
 
     @DeleteMapping("/{followerId}/unfollow/{followedUserId}")
     public ResponseEntity<String> unfollowUser(@PathVariable Integer followerId, @PathVariable Integer followedUserId) {
-        //User follower = userService.findUserById(followerId);
-        //User followedUser = userService.findUserById(followedUserId);
-        followService.unfollowUser(followerId, followedUserId);
+        User follower = userService.findUserById(followerId);
+        User followedUser = userService.findUserById(followedUserId);
+        followService.unfollowUser(follower, followedUser);
         return ResponseEntity.ok("User unfollowed successfully.");
     }
 
     @GetMapping("/{userId}/followers")
-    public ResponseEntity<List<FollowList>> getFollowers(@PathVariable Integer userId) {
-       // User user = userService.findUserById(userId);
-        List<FollowList> followers = followService.getFollowers2(userId);
+    public ResponseEntity<List<User>> getFollowers(@PathVariable Integer userId) {
+        User user = userService.findUserById(userId);
+        List<User> followers = followService.getFollowers2(user);
         return ResponseEntity.ok(followers);
     }
 
     @GetMapping("/{userId}/followings")
-    public ResponseEntity<List<FollowList>> getFollowings(@PathVariable Integer userId) {
-        //User user = userService.findUserById(userId);
-        List<FollowList> followings = followService.getFollowings2(userId);
+    public ResponseEntity<List<User>> getFollowings(@PathVariable Integer userId) {
+        User user = userService.findUserById(userId);
+        List<User> followings = followService.getFollowings2(user);
         return ResponseEntity.ok(followings);
     }
     

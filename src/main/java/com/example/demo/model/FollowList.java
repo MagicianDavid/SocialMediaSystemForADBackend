@@ -17,15 +17,15 @@ public class FollowList {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "followed_user_id")
-//    @JsonBackReference
-    private Integer followedUser;
+    @ManyToOne
+    @JoinColumn(name = "followed_user_id")
+    @JsonBackReference
+    private User followedUser;
 
-//    @ManyToOne
-//    @JoinColumn(name = "follower_id")
-//    @JsonBackReference
-    private Integer follower;
+    @ManyToOne
+    @JoinColumn(name = "follower_id")
+    @JsonBackReference
+    private User follower;
 
     private LocalDateTime followedTime;
 
@@ -39,19 +39,19 @@ public class FollowList {
         this.id = id;
     }
 
-    public Integer getFollowedUser() {
+    public User getFollowedUser() {
         return followedUser;
     }
 
-    public void setFollowedUser(Integer followedUser) {
+    public void setFollowedUser(User followedUser) {
         this.followedUser = followedUser;
     }
 
-    public Integer getFollower() {
+    public User getFollower() {
         return follower;
     }
 
-    public void setFollower(Integer follower) {
+    public void setFollower(User follower) {
         this.follower = follower;
     }
 
