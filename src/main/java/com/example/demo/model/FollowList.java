@@ -15,43 +15,43 @@ import jakarta.persistence.ManyToOne;
 public class FollowList {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "followed_user_id")
-    @JsonBackReference
-    private User followedUser;
+//    @ManyToOne
+//    @JoinColumn(name = "followed_user_id")
+//    @JsonBackReference
+    private Integer followedUser;
 
-    @ManyToOne
-    @JoinColumn(name = "follower_id")
-    @JsonBackReference
-    private User follower;
+//    @ManyToOne
+//    @JoinColumn(name = "follower_id")
+//    @JsonBackReference
+    private Integer follower;
 
     private LocalDateTime followedTime;
 
     // Getters and Setters
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public User getFollowedUser() {
+    public Integer getFollowedUser() {
         return followedUser;
     }
 
-    public void setFollowedUser(User followedUser) {
+    public void setFollowedUser(Integer followedUser) {
         this.followedUser = followedUser;
     }
 
-    public User getFollower() {
+    public Integer getFollower() {
         return follower;
     }
 
-    public void setFollower(User follower) {
+    public void setFollower(Integer follower) {
         this.follower = follower;
     }
 

@@ -21,6 +21,7 @@ import com.example.demo.exception.DuplicateUserException;
 import com.example.demo.exception.DuplicateTypeException;
 import com.example.demo.interfacemethods.FollowInterface;
 import com.example.demo.interfacemethods.UserInterface;
+import com.example.demo.model.FollowList;
 import com.example.demo.model.Follower;
 import com.example.demo.model.Following;
 import com.example.demo.model.User;
@@ -142,33 +143,37 @@ public class UserController {
 
     @PostMapping("/{followerId}/follow/{followedUserId}")
     public ResponseEntity<String> followUser(@PathVariable Integer followerId, @PathVariable Integer followedUserId) {
-        User follower = userService.findUserById(followerId);
-        User followedUser = userService.findUserById(followedUserId);
-        followService.followUser(follower, followedUser);
+        //User follower = userService.findUserById(followerId);
+        //User followedUser = userService.findUserById(followedUserId);
+        followService.followUser(followerId, followedUserId);
         return ResponseEntity.ok("User followed successfully.");
     }
 
     @DeleteMapping("/{followerId}/unfollow/{followedUserId}")
     public ResponseEntity<String> unfollowUser(@PathVariable Integer followerId, @PathVariable Integer followedUserId) {
-        User follower = userService.findUserById(followerId);
-        User followedUser = userService.findUserById(followedUserId);
-        followService.unfollowUser(follower, followedUser);
+        //User follower = userService.findUserById(followerId);
+        //User followedUser = userService.findUserById(followedUserId);
+        followService.unfollowUser(followerId, followedUserId);
         return ResponseEntity.ok("User unfollowed successfully.");
     }
 
     @GetMapping("/{userId}/followers")
-    public ResponseEntity<List<Follower>> getFollowers(@PathVariable Integer userId) {
-        User user = userService.findUserById(userId);
-        List<Follower> followers = followService.getFollowers(user);
+    public ResponseEntity<List<FollowList>> getFollowers(@PathVariable Integer userId) {
+       // User user = userService.findUserById(userId);
+        List<FollowList> followers = followService.getFollowers2(userId);
         return ResponseEntity.ok(followers);
     }
 
     @GetMapping("/{userId}/followings")
-    public ResponseEntity<List<Following>> getFollowings(@PathVariable Integer userId) {
-        User user = userService.findUserById(userId);
-        List<Following> followings = followService.getFollowings(user);
+    public ResponseEntity<List<FollowList>> getFollowings(@PathVariable Integer userId) {
+        //User user = userService.findUserById(userId);
+        List<FollowList> followings = followService.getFollowings2(userId);
         return ResponseEntity.ok(followings);
     }
+    
+    
+    
+    
     
     @ExceptionHandler(DuplicateUserException.class)
     public ResponseEntity<String> handleDuplicateUserException(DuplicateUserException ex) {
