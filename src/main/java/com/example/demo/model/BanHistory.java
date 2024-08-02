@@ -7,8 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+//import jakarta.persistence.JoinColumn;
+//import jakarta.persistence.ManyToOne;
 
 @Entity
 public class BanHistory {
@@ -18,9 +18,9 @@ public class BanHistory {
 	@Column (name= "Ban Id")
     private Integer id;
 	
-	@ManyToOne
-	@JoinColumn(name = "Banned User id")
-	private User banUser;
+//	@ManyToOne
+	@Column(name = "Banned User id")
+	private Integer banUserId;
 
 	@Column (name = "Ban Time")
 	private LocalDateTime banTime;
@@ -32,19 +32,20 @@ public class BanHistory {
 	
 	public BanHistory() {}
 	
-	public BanHistory(LocalDateTime banTime, Integer banDuration) {
+	public BanHistory(Integer banUserId,LocalDateTime banTime, Integer banDuration) {
+		this.banUserId = banUserId;
 		this.banTime = banTime; 
 		this.banDuration = banDuration;
 	}
 
 	
 //	Getters and Setters
-	public User getUser() {
-		return banUser;
+	public Integer getBanUserId() {
+		return banUserId;
 	}
 
-	public void setUser(User banUser) {
-		this.banUser = banUser;
+	public void setBanUserId(Integer banUserId) {
+		this.banUserId = banUserId;
 	}
 
 	public LocalDateTime getBanTime() {

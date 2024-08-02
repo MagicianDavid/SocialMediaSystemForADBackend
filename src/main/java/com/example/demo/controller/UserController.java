@@ -121,13 +121,6 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
     
-    // check user social score and change its status & authorization accordingly
-    @PutMapping("/checkUserSocialScore/{id}")
-    public ResponseEntity<Void> checkUserSocialScoreThenUpdateStatusAndAuth(@PathVariable("id") Integer id) {
-        userService.checkUserSocialScoreThenUpdateStatusAndAuth(id);
-        return ResponseEntity.noContent().build();
-    }
-    
     @PutMapping("{UserId}/block/{blockId}")
     public ResponseEntity<Void> blockUser(@PathVariable("UserId") Integer UserId, @PathVariable("blockId") Integer blockId) {
         userService.blockUserById(UserId,blockId);

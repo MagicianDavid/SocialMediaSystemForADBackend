@@ -78,11 +78,11 @@ public class User {
 	@OneToMany(mappedBy = "followingUser", cascade = CascadeType.ALL)
 	private List<Following> followings;
 
-	@OneToMany(mappedBy = "banUser", cascade = CascadeType.ALL)
-	private List<BanHistory> banHistories;
+//	@OneToMany(mappedBy = "banUser", cascade = CascadeType.ALL)
+//	private List<BanHistory> banHistories;
 
-	@OneToMany(mappedBy = "notificationUser", cascade = CascadeType.ALL)
-	private List<Notification> notifications;
+//	@OneToMany(mappedBy = "notificationUser", cascade = CascadeType.ALL)
+//	private List<Notification> notifications;
 
 	public User() {
 	}
@@ -240,22 +240,6 @@ public class User {
 
 	public void setFollowings(List<Following> followings) {
 		this.followings = followings;
-	}
-
-	public List<BanHistory> getBanHistories() {
-		return banHistories;
-	}
-
-	public void setBanHistories(List<BanHistory> banHistories) {
-		this.banHistories = banHistories;
-	}
-
-	public List<Notification> getNotifications() {
-		return notifications;
-	}
-
-	public void setNotifications(List<Notification> notifications) {
-		this.notifications = notifications;
 	}
 
 }

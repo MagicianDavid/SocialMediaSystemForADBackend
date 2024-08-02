@@ -78,7 +78,7 @@ public class UserService implements UserInterface {
     		}
         	if(isMathched) {
         		// check user status if not active we don't allow this user log in
-        		if (checkUser.getStatus().equals("active")) {
+        		if (checkUser.getStatus().equals(UserStatus.active)) {
                 	return checkUser;	
         		} else {
         			throw new RuntimeException("No longer active user!");
@@ -105,12 +105,12 @@ public class UserService implements UserInterface {
 		
 		// Set the default role and authorization for new employees
 		// TODO: actually this kind of default setting is very strange
-		// since u are hard coding the User role but what if there's no role or auth?
+		// since u are hard coding the User role but what if there's no role or authorization?
 		Role defaultRole = roleRepository.findByTypeIgnoreCase("User");
 		List<Auth> allAuth = authRepository.findAll();
 		Auth defaultAuth = new Auth();
 		if (allAuth.size() > 0) {
-			// set the first auth as default auth
+			// set the first authorization as default authorization ?
 			defaultAuth = allAuth.get(0);
 		} else {
 			defaultAuth = null;
@@ -130,7 +130,7 @@ public class UserService implements UserInterface {
 	@Override
 	public List<User> findAllUsers() {
 		// only return users whose status is not "delete"
-		return userRepository.findAll().stream().filter(u->!u.getStatus().equals("delete")).toList();
+		return userRepository.findAll().stream().filter(u->!u.getStatus().equals(UserStatus.delete)).toList();
 	}
 
 	@Override
@@ -245,31 +245,28 @@ public class UserService implements UserInterface {
 		curUser.setJoinDate(user.getJoinDate());
 		return userRepository.save(curUser);
 	}
-
-	private void changeUserAuthAndStatus(User user, Auth auth, UserStatus status) {
-		try {
-			user.setStatus(status);
-			user.setAuth(auth);
-		} catch (Exception e) {
-			throw new RuntimeException("Failed to changeUserAuthAndStatus to user with ID: " + user.getId(), e);
-		}
-	}
 	
 	@Override
 	@Transactional(readOnly = false)
-	public User checkUserSocialScoreThenUpdateStatusAndAuth(Integer userId) {
+	public Auth checkUserSocialScoreThenAdjustAuth(Integer userId) {
 		User curUser = findUserById(userId);
 		Integer curSocialScore = curUser.getSocialScore();
 		Integer curRank = (curSocialScore + 9) / 10;
-		// default set format of "FixedRank12"
-		Auth adjustAuth = authRepository.findByRank("FixedRank" + curRank );
-		// TODO: haven't implement ban for how long  
+		// set socialScore 1-60 as a list for judgment
+		List<Integer> fistRandList = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 6));
+		// default set format of "FixedRankForSocialScore:1-60" "FixedRankForSocialScore:0"
+		Auth adjustAuth = authRepository.findByRank("FixedRankForSocialScore:" + ((curRank - 1) * 10 + 1) + "-" + curRank * 10 );
 		if (curRank == 0) {
-			// ban this user
-			changeUserAuthAndStatus(curUser,adjustAuth,UserStatus.ban);
+			// we should ban this user
+			// but here we just return the authorization
+			adjustAuth = authRepository.findByRank("FixedRankForSocialScore:0");
 		} else {
-			changeUserAuthAndStatus(curUser,adjustAuth,UserStatus.active);
+			if (fistRandList.contains(curRank)) {
+				adjustAuth = authRepository.findByRank("FixedRankForSocialScore:1-60");
+			}
 		}
-		return userRepository.save(curUser);
+		curUser.setAuth(adjustAuth);
+		userRepository.save(curUser);
+		return adjustAuth;
 	}
 }

@@ -4,6 +4,8 @@ public class EmailRequest {
     private String to;
     private String subject;
     private String text;
+    
+    // Getters and Setters
 	public String getTo() {
 		return to;
 	}
@@ -22,7 +24,10 @@ public class EmailRequest {
 	public void setText(String text) {
 		this.text = text;
 	}
-
-    // Getters and Setters
+	public EmailRequest(String to, String subject, String text) {
+		this.to = to;
+		this.subject = subject;
+		this.text = text;
+	}
     
 }

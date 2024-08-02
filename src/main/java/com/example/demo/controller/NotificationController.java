@@ -2,8 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Notification;
 import com.example.demo.dto.EmailRequest;
+import com.example.demo.interfacemethods.NotificationInterface;
 import com.example.demo.service.EmailService;
-import com.example.demo.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ import java.util.List;
 public class NotificationController {
 
     @Autowired
-    private NotificationService notificationService;
+    private NotificationInterface notificationService;
     
     @Autowired
     private EmailService emailService;

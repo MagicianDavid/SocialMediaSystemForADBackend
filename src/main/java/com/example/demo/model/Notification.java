@@ -33,7 +33,8 @@ public class Notification {
 	
 	
 	public Notification () {}
-	public Notification (String message, LocalDateTime notificationTime, NotificationStatus notificationStatus) {
+	public Notification (User notificationUser, String message, LocalDateTime notificationTime, NotificationStatus notificationStatus) {
+		this.notificationUser = notificationUser;
 		this.message = message;
 		this.notificationTime = notificationTime;
 		this.notificationStatus = notificationStatus;

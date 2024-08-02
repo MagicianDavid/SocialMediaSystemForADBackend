@@ -2,6 +2,7 @@ package com.example.demo.interfacemethods;
 
 import java.util.List;
 
+import com.example.demo.model.Auth;
 import com.example.demo.model.User;
 import com.example.demo.model.UserStatus;
 
@@ -21,5 +22,5 @@ public interface UserInterface {
 	//Check user
 	User authenicate (String username, String pwd);
 	User registerUser(User user);
-	User checkUserSocialScoreThenUpdateStatusAndAuth(Integer userId);
+	Auth checkUserSocialScoreThenAdjustAuth(Integer userId);
 }
