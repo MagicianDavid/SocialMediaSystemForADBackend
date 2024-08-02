@@ -3,6 +3,11 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.PCMsgDTO;
 import com.example.demo.dto.PCMsgDetail;
 import com.example.demo.dto.SearchResult;
 import com.example.demo.interfacemethods.PCMsgInterface;
@@ -36,12 +42,24 @@ public class PCMsgController {
     
 	@Autowired
     private TaggingService taggingService;
+	
+	@Autowired
+	@Qualifier("pagedResourcesAssembler")
+    private PagedResourcesAssembler<PCMsgDTO> pagedResourcesAssembler;
     
 	// return all posts 
 	@GetMapping("/findAllPosts")
     public ResponseEntity<List<PCMsg>> getAllPosts() {
         List<PCMsg> postList = pcmsgService.findAllPosts();
         return ResponseEntity.ok(postList);
+    }
+	
+	// for pagination
+	@GetMapping("/findAllPostsPageable")
+    public org.springframework.hateoas.PagedModel<EntityModel<PCMsgDTO>> getAllPosts(@RequestParam(value = "page", defaultValue = "0") int page,
+                                   @RequestParam(value = "size", defaultValue = "10") int size) {
+		Page<PCMsgDTO> pcmsgPage = pcmsgService.findAllPosts(page, size);
+        return pagedResourcesAssembler.toModel(pcmsgPage);
     }
 	
 	// return all posts order by like & comments

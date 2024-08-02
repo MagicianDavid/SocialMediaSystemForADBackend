@@ -2,8 +2,11 @@ package com.example.demo.interfacemethods;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import com.example.demo.model.PCMsg;
 import com.example.demo.model.User;
+import com.example.demo.dto.PCMsgDTO;
 import com.example.demo.dto.PCMsgDetail;
 
 public interface PCMsgInterface {
@@ -11,6 +14,7 @@ public interface PCMsgInterface {
 	List<PCMsg> findAllPCMsgDateDESC();
 	// return whatever posts in our database
 	List<PCMsg> findAllPosts();
+	Page<PCMsgDTO> findAllPosts(Integer page, Integer size);
 	// return all posts of the specific user with userId
 	List<PCMsg> findAllPostsByUserId(Integer userId);
 	// return this user's following users' posts

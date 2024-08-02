@@ -7,9 +7,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.dto.PCMsgDTO;
 import com.example.demo.dto.PCMsgDetail;
 import com.example.demo.interfacemethods.PCMsgInterface;
 import com.example.demo.model.PCMsg;
@@ -77,9 +82,20 @@ public class PCMsgService implements PCMsgInterface{
 	
 	@Override
 	public List<PCMsg> findAllPosts() {
-		//i edited this, previous it is reeturn comment too.
+		//i edited this, previous it is return comment too.
 		return pcmsgRepository.findAllPostsOnly();
 	}
+	
+	// Pagination version of finAllPosts
+	@Override
+    public Page<PCMsgDTO> findAllPosts(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PCMsg> pcmsgPage = pcmsgRepository.findAllPostsOnly(pageable);
+        List<PCMsgDTO> pcmsgDTOs = pcmsgPage.stream()
+                .map(PCMsgDTO::new)
+                .collect(Collectors.toList());
+        return new PageImpl<>(pcmsgDTOs, pageable, pcmsgPage.getTotalElements());
+    }
 	
 	@Override
 	public List<PCMsg> findAllPCMsgDateDESC() {
