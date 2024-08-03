@@ -23,8 +23,6 @@ import com.example.demo.exception.DuplicateTypeException;
 import com.example.demo.interfacemethods.FollowInterface;
 import com.example.demo.interfacemethods.UserInterface;
 import com.example.demo.model.FollowList;
-import com.example.demo.model.Follower;
-import com.example.demo.model.Following;
 import com.example.demo.model.User;
 import com.example.demo.model.UserStatus;
 
@@ -162,14 +160,14 @@ public class UserController {
     @GetMapping("/{userId}/followers")
     public ResponseEntity<List<User>> getFollowers(@PathVariable Integer userId) {
         User user = userService.findUserById(userId);
-        List<User> followers = followService.getFollowers2(user);
+        List<User> followers = followService.getFollowers(user);
         return ResponseEntity.ok(followers);
     }
 
     @GetMapping("/{userId}/followings")
     public ResponseEntity<List<User>> getFollowings(@PathVariable Integer userId) {
         User user = userService.findUserById(userId);
-        List<User> followings = followService.getFollowings2(user);
+        List<User> followings = followService.getFollowings(user);
         return ResponseEntity.ok(followings);
     }
     

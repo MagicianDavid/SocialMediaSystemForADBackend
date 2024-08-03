@@ -50,7 +50,12 @@ public class TaggingService {
 	        ResponseEntity<String> response = restTemplate.exchange(
 	        		url, HttpMethod.POST, entity, String.class);
 
-	        return response.getBody();
+	        String responseBody = response.getBody();
+            if (responseBody != null && !responseBody.isEmpty()) {
+                return responseBody.toLowerCase();
+            } else {
+                return null;
+            }
 	    }
 	 
 }

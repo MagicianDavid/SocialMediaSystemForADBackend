@@ -6,12 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.interfacemethods.FollowInterface;
 import com.example.demo.model.FollowList;
-import com.example.demo.model.Follower;
-import com.example.demo.model.Following;
+
 import com.example.demo.model.User;
 import com.example.demo.repository.FollowListRepository;
-import com.example.demo.repository.FollowerRepository;
-import com.example.demo.repository.FollowingRepository;
+
 
 
 import java.time.LocalDateTime;
@@ -23,35 +21,31 @@ import java.util.stream.Collectors;
 @Transactional (readOnly = true)
 public class FollowService implements FollowInterface {
 
-    @Autowired
-    private FollowerRepository followerRepository;
-
-    @Autowired
-    private FollowingRepository followingRepository;
 
     @Autowired 
     private FollowListRepository followListRepository;
     
     
     @Override
-    public List<User> getFollowers2(User user) {
+    public List<User> getFollowers(User user) {
+    	 //filter out block user
 		 String blockList = user.getBlockList();
 		 List<String> blockedUserIds = Arrays.asList(blockList.split(","));
 
     	 List<FollowList> followers = followListRepository.findByFollowedUser(user);
          return followers.stream()
-                         .map(FollowList::getFollower)
+                         .map(FollowList::getFollowingUser)
                          .filter(follower -> !blockedUserIds.contains(follower.getId().toString()))
                          .collect(Collectors.toList());
     }
 
     @Override
-    public List<User> getFollowings2(User user) {
+    public List<User> getFollowings(User user) {
     	
 	   	String blockList = user.getBlockList();
 		List<String> blockedUserIds = Arrays.asList(blockList.split(","));
 		
-    	List<FollowList> followings = followListRepository.findByFollower(user);
+    	List<FollowList> followings = followListRepository.findByFollowingUser(user);
         return followings.stream()
                          .map(FollowList::getFollowedUser)
                          .filter(follower -> !blockedUserIds.contains(follower.getId().toString()))
@@ -60,7 +54,7 @@ public class FollowService implements FollowInterface {
     
         
     public boolean isFollowing(User currentUser, User targetUser) {
-        return followListRepository.existsByFollowerAndFollowedUser(currentUser, targetUser);
+        return followListRepository.existsByFollowingUserAndFollowedUser(currentUser, targetUser);
     }
     
     @Override
@@ -69,7 +63,7 @@ public class FollowService implements FollowInterface {
     	
        if (!isFollowing(follower, followedUser)) {
           FollowList followList = new FollowList();
-          followList.setFollower(follower);
+          followList.setFollowingUser(follower);
           followList.setFollowedUser(followedUser);
           followList.setFollowedTime(LocalDateTime.now());
           followListRepository.save(followList);
@@ -80,36 +74,8 @@ public class FollowService implements FollowInterface {
     @Override
     @Transactional(readOnly = false)
     public void unfollowUser(User follower, User followedUser) {
-    	followListRepository.deleteByFollowerAndFollowedUser(follower, followedUser);
+    	followListRepository.deleteByFollowingUserAndFollowedUser(follower, followedUser);
 
-//        Follower existingFollower = followerRepository.findByFollowedUserOrderByFollowedTimeDesc(followedUser)
-//                .stream()
-//                .filter(f -> f.getFollowedUser().equals(follower))
-//                .findFirst()
-//                .orElse(null);
-//
-//        if (existingFollower != null) {
-//            followerRepository.delete(existingFollower);
-//        }
-//
-//        Following existingFollowing = followingRepository.findByFollowingUserOrderByFollowingTimeDesc(follower)
-//                .stream()
-//                .filter(f -> f.getFollowingUser().equals(followedUser))
-//                .findFirst()
-//                .orElse(null);
-//
-//        if (existingFollowing != null) {
-//            followingRepository.delete(existingFollowing);
-//        }
     }
 
-    @Override
-    public List<Follower> getFollowers(User user) {
-        return followerRepository.findByFollowedUserOrderByFollowedTimeDesc(user);
-    }
-
-    @Override
-    public List<Following> getFollowings(User user) {
-        return followingRepository.findByFollowingUserOrderByFollowingTimeDesc(user);
-    }
 }

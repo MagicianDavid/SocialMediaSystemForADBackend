@@ -25,6 +25,8 @@ public interface PCMsgRepository extends JpaRepository<PCMsg,Integer> {
     List<PCMsg> findAllFollowingPostsByUserId(@Param("followingUserIds") List<Integer> followingUserIds, 
                                               @Param("blockedUserIds") List<Integer> blockedUserIds);
     
+    
+    
     @Query("Select p From PCMsg p WHERE p.sourceId IS NULL AND (p.content like CONCAT('%',:k,'%') OR p.user.username like CONCAT('%',:k,'%')) ORDER BY p.timeStamp DESC") 
 	List<PCMsg> SearchPostsByContentAndUserNameOrderByDateDesc(@Param("k") String keyword);
     
@@ -36,9 +38,19 @@ public interface PCMsgRepository extends JpaRepository<PCMsg,Integer> {
     Page<PCMsg> findAllPostsOnly(Pageable pageable);
     
     //Remove Deleted Post
-	//@Query("SELECT p FROM PCMsg p WHERE p.sourceId IS NULL and p.status != 'delete' ORDER BY p.timeStamp DESC ")
-	//List<PCMsg> findAllPostsOnlyNotDeleted();
+//	@Query("SELECT p FROM PCMsg p WHERE p.sourceId IS NULL and p.status != 'delete' ORDER BY p.timeStamp DESC ")
+//	List<PCMsg> findAllPostsOnlyNotDeleted();
     
+    @Query("SELECT p FROM PCMsg p WHERE p.sourceId IS NULL AND p.status != 'delete' "
+            + "AND (p.user.id IN :followingUserIds OR p.user.id = :userId) "
+            + "AND p.user.id NOT IN :blockedUserIds "
+            + "ORDER BY p.timeStamp DESC")
+    List<PCMsg> findAllFollowingPostsAndNotDeletedByUserId(
+            @Param("followingUserIds") List<Integer> followingUserIds, 
+            @Param("blockedUserIds") List<Integer> blockedUserIds,
+            @Param("userId") int userId);
+
+
 //    @Query("SELECT p FROM PCMsg p WHERE p.sourceId = :sourceId")
 //    List<PCMsg> findByPostId(@Param("sourceId") int sourceId);
 }

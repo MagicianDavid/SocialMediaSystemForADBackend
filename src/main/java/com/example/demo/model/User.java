@@ -76,22 +76,14 @@ public class User {
 	private List<Report> reports;
 
 	// ----------XT-----------------
+    
 	@OneToMany(mappedBy = "followedUser", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Follower> followers;
+    private List<FollowList> followers;
 
     @OneToMany(mappedBy = "followingUser", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Following> followings;
-    
-    
-	@OneToMany(mappedBy = "followedUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<FollowList> followed_user_id;
-
-    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<FollowList> follower_id;
+    private List<FollowList> followings;
 
 //	@OneToMany(mappedBy = "banUser", cascade = CascadeType.ALL)
 //	private List<BanHistory> banHistories;
@@ -241,20 +233,21 @@ public class User {
 		this.reports = reports;
 	}
 	
-	public List<Follower> getFollowers() {
+	public List<FollowList> getFollowers() {
 		return followers;
 	}
 
-	public void setFollowers(List<Follower> followers) {
+	public void setFollowers(List<FollowList> followers) {
 		this.followers = followers;
 	}
 
-	public List<Following> getFollowings() {
+	public List<FollowList> getFollowings() {
 		return followings;
 	}
 
-	public void setFollowings(List<Following> followings) {
+	public void setFollowings(List<FollowList> followings) {
 		this.followings = followings;
 	}
 
+	
 }

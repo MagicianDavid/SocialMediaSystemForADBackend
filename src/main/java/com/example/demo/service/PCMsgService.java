@@ -19,11 +19,15 @@ import com.example.demo.dto.PCMsgDetail;
 import com.example.demo.interfacemethods.PCMsgInterface;
 import com.example.demo.model.PCMsg;
 import com.example.demo.model.User;
-import com.example.demo.model.Following;
+import com.example.demo.model.FollowList;
+import com.example.demo.model.Label;
 import com.example.demo.model.Like;
+import com.example.demo.repository.FollowListRepository;
+import com.example.demo.repository.LabelRepository;
 import com.example.demo.repository.LikeRepository;
 import com.example.demo.repository.PCMsgRepository;
 import com.example.demo.repository.UserRepository;
+
 
 @Service
 @Transactional(readOnly = true)
@@ -37,6 +41,12 @@ public class PCMsgService implements PCMsgInterface{
 	
 	@Autowired
 	private LikeRepository likeRepository;
+	
+    @Autowired
+    private LabelRepository labelRepository;
+	
+	@Autowired
+    private FollowListRepository followListRepository;
 	
 	private void changePCMsgStatusById(Integer id, String operation) {
 		try {
@@ -112,18 +122,40 @@ public class PCMsgService implements PCMsgInterface{
 	public List<PCMsg> findAllFollowingPostsByUserId(Integer userId) {
 		User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with ID:" + userId));
-		List<Following> followings = user.getFollowings();
+		
+		List<FollowList> followings = user.getFollowings();
 		String blockList = user.getBlockList();
 
         List<Integer> followingUserIds = followings.stream()
-                .map(following -> following.getFollowingUser().getId())
+                .map(FollowList -> FollowList.getFollowedUser().getId())
                 .collect(Collectors.toList());
 
         List<Integer> blockedUserIds = Arrays.stream(blockList.split(","))
+                .filter(blockId -> !blockId.trim().isEmpty())
                 .map(Integer::parseInt)
                 .collect(Collectors.toList());
 
         return pcmsgRepository.findAllFollowingPostsByUserId(followingUserIds, blockedUserIds);
+	}
+	
+	@Override
+	public List<PCMsg> findAllFollowingPostsAndNotDeletedByUserId(Integer userId) {
+		User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID:" + userId));
+		
+		List<FollowList> followings = user.getFollowings();
+		String blockList = user.getBlockList();
+
+        List<Integer> followingUserIds = followings.stream()
+                .map(FollowList -> FollowList.getFollowedUser().getId())
+                .collect(Collectors.toList());
+
+        List<Integer> blockedUserIds = Arrays.stream(blockList.split(","))
+                .filter(blockId -> !blockId.trim().isEmpty()) 
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+        
+        return pcmsgRepository.findAllFollowingPostsAndNotDeletedByUserId(followingUserIds, blockedUserIds, userId);
 	}
 	
 	@Override
@@ -221,9 +253,45 @@ public class PCMsgService implements PCMsgInterface{
 	}
 	
 	
+	//Calculate the amount of score to be minus off after they posted.
+    public void penalizeUserBasedOnTags(PCMsg post) {
+		User user = userRepository.findById(post.getUser().getId())
+                .orElseThrow(() -> new RuntimeException("User not found with ID"));
+		
+        String[] tags = post.getTag().getTag().split(",");
+        
+        //Calculate the total penalty score
+        int penalty = 0;
+        double multipler = 1;
+        
+        if (post.getSourceId() == null) {
+        	multipler = 0.5;
+        }
+        
+        for (String tagName : tags) {
+            if (!tagName.equalsIgnoreCase("none")) { // Ignore "none" tags
+                Label label = labelRepository.findByLabel(tagName.trim());
+                if (label != null) {
+                    penalty += (int)(label.getPenaltyScore() * multipler);
+                }
+            }
+        }
+        
+        if (user.getSocialScore() != null) {
+            user.setSocialScore(user.getSocialScore() - penalty);
+            userRepository.save(user);
+        } else {
+        	  System.out.println("User Social Score is null for User ID:" + user.getSocialScore());
+        }        
+        //System.out.println("User Social Score is null for User ID:" + penalty);
+    }
+	
 	@Override
 	@Transactional(readOnly = false)
 	public PCMsg savePCMsgt(PCMsg pcmsg) {
+		if (pcmsg.getTag().getTag() != null) {
+			penalizeUserBasedOnTags(pcmsg);
+		}
 		return pcmsgRepository.save(pcmsg);
 	}
 
@@ -267,4 +335,6 @@ public class PCMsgService implements PCMsgInterface{
 	public void hidePCMsgById(Integer id) {
 		upgradePCMsgStatusById(id,"hide");
 	}
+
+
 }

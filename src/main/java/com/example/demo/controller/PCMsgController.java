@@ -99,6 +99,17 @@ public class PCMsgController {
         return ResponseEntity.ok(postList);
     }
 	
+	// find all posts for this users'following, !blockList, his own post
+	@GetMapping("/findAllFollowingPostsAndNotDeletedByUserId/{id}")
+    public ResponseEntity<List<PCMsg>> findAllFollowingPostsAndNotDeletedByUserId(@PathVariable("id") Integer id) {
+		//List<PCMsg> postList = pcmsgService.findAllFollowingPostsByUserId(id);
+		List<PCMsg> postList = pcmsgService.findAllFollowingPostsAndNotDeletedByUserId(id);
+
+        return ResponseEntity.ok(postList);
+    }
+	
+	
+	
 	@GetMapping("/findPostDetailById/{id}")
     public ResponseEntity<PCMsgDetail> getPostById(@PathVariable("id") Integer id) {
 		PCMsgDetail post = pcmsgService.findPCMsgDetailById(id);
@@ -150,6 +161,13 @@ public class PCMsgController {
     // and the tag logic haven't done
 	@PostMapping(value = "/createComment", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PCMsg> saveComment(@RequestBody PCMsg comment) {
+		
+	    String tags = taggingService.getTagsForText(comment.getContent());
+        Tag tag = new Tag();
+        tag.setTag(tags);
+        tag.setPCMsg(comment);
+        comment.setTag(tag);
+	
 		PCMsg newComment = pcmsgService.savePCMsgt(comment);
         return ResponseEntity.status(HttpStatus.CREATED).body(newComment);
     }

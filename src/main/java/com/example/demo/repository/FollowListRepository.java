@@ -11,10 +11,10 @@ public interface FollowListRepository extends JpaRepository<FollowList, Integer>
 	
 //    List<FollowList> findByFollowedUserOrderByFollowedTimeDesc(User followedUser);
 	
-    List<FollowList> findByFollower(User follower);
-    List<FollowList> findByFollowedUser(User followedUser);
-    void deleteByFollowerAndFollowedUser(User follower, User followedUser);
-    boolean existsByFollowerAndFollowedUser(User follower, User followedUser);
+	  List<FollowList> findByFollowingUser(User followingUser);
+	  List<FollowList> findByFollowedUser(User followedUser);
+	  void deleteByFollowingUserAndFollowedUser(User followingUser, User followedUser);
+	  boolean existsByFollowingUserAndFollowedUser(User followingUser, User followedUser);
 
 //    void deleteByFollowingUserAndFollowedUser(User followingUser, User followedUser);
 

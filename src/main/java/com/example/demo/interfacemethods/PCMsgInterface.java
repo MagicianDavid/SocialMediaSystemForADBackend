@@ -19,9 +19,14 @@ public interface PCMsgInterface {
 	List<PCMsg> findAllPostsByUserId(Integer userId);
 	// return this user's following users' posts
 	List<PCMsg> findAllFollowingPostsByUserId(Integer userId);
+
+	// return all FollowingPost, Not Deleted, Include own Post
+	List<PCMsg> findAllFollowingPostsAndNotDeletedByUserId(Integer userId);
 	// return hot posts in our database
 	// according to the amount of comments and likes
 	List<PCMsg> findAllHotPosts();
+	
+	 
 	
 	// the next three interface/service are for the search bar use case
 	// return related search following users by user_name
