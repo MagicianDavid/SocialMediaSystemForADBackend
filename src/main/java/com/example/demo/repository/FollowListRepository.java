@@ -14,6 +14,7 @@ public interface FollowListRepository extends JpaRepository<FollowList, Integer>
     List<FollowList> findByFollower(User follower);
     List<FollowList> findByFollowedUser(User followedUser);
     void deleteByFollowerAndFollowedUser(User follower, User followedUser);
+    boolean existsByFollowerAndFollowedUser(User follower, User followedUser);
 
 //    void deleteByFollowingUserAndFollowedUser(User followingUser, User followedUser);
 

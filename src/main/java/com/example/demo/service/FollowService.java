@@ -15,6 +15,7 @@ import com.example.demo.repository.FollowingRepository;
 
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,39 +35,45 @@ public class FollowService implements FollowInterface {
     
     @Override
     public List<User> getFollowers2(User user) {
+		 String blockList = user.getBlockList();
+		 List<String> blockedUserIds = Arrays.asList(blockList.split(","));
+
     	 List<FollowList> followers = followListRepository.findByFollowedUser(user);
          return followers.stream()
                          .map(FollowList::getFollower)
+                         .filter(follower -> !blockedUserIds.contains(follower.getId().toString()))
                          .collect(Collectors.toList());
     }
 
     @Override
     public List<User> getFollowings2(User user) {
+    	
+	   	String blockList = user.getBlockList();
+		List<String> blockedUserIds = Arrays.asList(blockList.split(","));
+		
     	List<FollowList> followings = followListRepository.findByFollower(user);
         return followings.stream()
                          .map(FollowList::getFollowedUser)
+                         .filter(follower -> !blockedUserIds.contains(follower.getId().toString()))
                          .collect(Collectors.toList());
     }
     
         
+    public boolean isFollowing(User currentUser, User targetUser) {
+        return followListRepository.existsByFollowerAndFollowedUser(currentUser, targetUser);
+    }
+    
     @Override
     @Transactional(readOnly = false)
     public void followUser(User follower, User followedUser) {
+    	
+       if (!isFollowing(follower, followedUser)) {
           FollowList followList = new FollowList();
           followList.setFollower(follower);
           followList.setFollowedUser(followedUser);
           followList.setFollowedTime(LocalDateTime.now());
           followListRepository.save(followList);
-    	
-//        Follower newFollower = new Follower();
-//        newFollower.setFollowedUser(followedUser);
-//        newFollower.setFollowedTime(LocalDateTime.now());
-//        followerRepository.save(newFollower);
-//
-//        Following newFollowing = new Following();
-//        newFollowing.setFollowingUser(follower);
-//        newFollowing.setFollowingTime(LocalDateTime.now());
-//        followingRepository.save(newFollowing);
+    	}
     }
     
 

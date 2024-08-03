@@ -18,6 +18,7 @@ import com.example.demo.model.User;
 import com.example.demo.model.UserStatus;
 import com.example.demo.model.Role;
 import com.example.demo.repository.AuthRepository;
+import com.example.demo.repository.FollowListRepository;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.util.PasswordUtil;
@@ -34,6 +35,9 @@ public class UserService implements UserInterface {
 
 	@Autowired
 	private AuthRepository authRepository;
+	
+    @Autowired 
+    private FollowListRepository followListRepository;
 	
 	// can not save or update the same employee/user
 	// use this method to handleDuplicateEmployee and throw exceptions accordingly 
@@ -209,6 +213,8 @@ public class UserService implements UserInterface {
 	public void blockUserById(Integer UserId, Integer blockUserId) {
 		// can not block him/herself
 		User curUser = findUserById(UserId);
+		User blockUser = findUserById(blockUserId);
+
 		findUserById(blockUserId);
 
         String blockList = curUser.getBlockList();
@@ -225,8 +231,12 @@ public class UserService implements UserInterface {
             }
         }
         curUser.setBlockList(blockList);
+        
+        //remove it from following//follower
         userRepository.save(curUser);
 	}
+	
+	
 	
 	@Override
 	@Transactional(readOnly = false)

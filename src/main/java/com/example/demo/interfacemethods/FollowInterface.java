@@ -12,7 +12,7 @@ public interface FollowInterface {
     void unfollowUser(User follower, User followedUser);
     List<Follower> getFollowers(User user);
     List<Following> getFollowings(User user);
-    
+    boolean isFollowing(User currentUser, User targetUser);
     
 	List<User> getFollowers2(User user);
 	List<User> getFollowings2(User user);
