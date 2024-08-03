@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.LoginRequest;
+import com.example.demo.dto.UserDTO;
 import com.example.demo.exception.DuplicateUserException;
 import com.example.demo.exception.DuplicateTypeException;
 import com.example.demo.interfacemethods.FollowInterface;
@@ -62,6 +63,12 @@ public class UserController {
     public ResponseEntity<List<User>> getAllUser() {
         List<User> users = userService.findAllUsers();
         return ResponseEntity.ok(users);
+    }
+    
+    @GetMapping("/findAllBlockUserByUId/{userId}")
+    public ResponseEntity<List<UserDTO>> getAllBlockUsersByUId(@PathVariable("userId") Integer userId) {
+        List<UserDTO> blockUsers = userService.findAllBlockUsersByUId(userId);
+        return ResponseEntity.ok(blockUsers);
     }
 
     @GetMapping("/findById/{id}")
