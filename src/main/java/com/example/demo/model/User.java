@@ -84,14 +84,14 @@ public class User {
     @JsonIgnore
     private List<Following> followings;
     
-    
-	@OneToMany(mappedBy = "followedUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<FollowList> followed_user_id;
-
-    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<FollowList> follower_id;
+//    
+//	@OneToMany(mappedBy = "followedUser", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonIgnore
+//    private List<FollowList> followed_user_id;
+//
+//    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonIgnore
+//    private List<FollowList> follower_id;
 
 //	@OneToMany(mappedBy = "banUser", cascade = CascadeType.ALL)
 //	private List<BanHistory> banHistories;

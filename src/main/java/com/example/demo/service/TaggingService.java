@@ -10,7 +10,7 @@ import java.util.Map;
 @Service
 public class TaggingService {
 
-	 public String getTagsForText(String text) {
+	 public String spamCheck(String text) {
         RestTemplate restTemplate = new RestTemplate();
         String url = "http://127.0.0.1:5000/predict";
 
@@ -33,4 +33,24 @@ public class TaggingService {
         return "No tags";
     }
 	
+	
+	 public String getTagsForText(String text) {
+	        RestTemplate restTemplate = new RestTemplate();
+	        String url = "http://127.0.0.1:5000/mlbpredict";
+
+	     
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.add("Content-Type", "application/json");
+
+	        Map<String, String> request = new HashMap<>();
+	        request.put("text", text);
+
+	        HttpEntity<Map<String, String>> entity = new HttpEntity<>(request, headers);
+
+	        ResponseEntity<String> response = restTemplate.exchange(
+	        		url, HttpMethod.POST, entity, String.class);
+
+	        return response.getBody();
+	    }
+	 
 }

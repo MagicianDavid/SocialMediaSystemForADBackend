@@ -21,7 +21,7 @@ public interface PCMsgRepository extends JpaRepository<PCMsg,Integer> {
     @Query("SELECT p FROM PCMsg p WHERE p.sourceId = :pcmsgId")
     List<PCMsg> findAllFirstLayerChildren(@Param("pcmsgId") int pcmsgId);
     
-    @Query("SELECT p FROM PCMsg p WHERE p.sourceId IS NULL AND p.user.id IN :followingUserIds AND p.user.id NOT IN :blockedUserIds")
+    @Query("SELECT p FROM PCMsg p WHERE p.sourceId IS NULL AND p.user.id IN :followingUserIds AND p.user.id NOT IN :blockedUserIds AND p.status != 'delete'  ORDER BY p.timeStamp DESC")
     List<PCMsg> findAllFollowingPostsByUserId(@Param("followingUserIds") List<Integer> followingUserIds, 
                                               @Param("blockedUserIds") List<Integer> blockedUserIds);
     
@@ -35,6 +35,9 @@ public interface PCMsgRepository extends JpaRepository<PCMsg,Integer> {
     @Query("SELECT p FROM PCMsg p WHERE p.sourceId IS NULL ORDER BY p.timeStamp DESC ")
     Page<PCMsg> findAllPostsOnly(Pageable pageable);
     
+    //Remove Deleted Post
+	//@Query("SELECT p FROM PCMsg p WHERE p.sourceId IS NULL and p.status != 'delete' ORDER BY p.timeStamp DESC ")
+	//List<PCMsg> findAllPostsOnlyNotDeleted();
     
 //    @Query("SELECT p FROM PCMsg p WHERE p.sourceId = :sourceId")
 //    List<PCMsg> findByPostId(@Param("sourceId") int sourceId);

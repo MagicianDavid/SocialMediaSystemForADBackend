@@ -86,6 +86,7 @@ public class PCMsgService implements PCMsgInterface{
 		return pcmsgRepository.findAllPostsOnly();
 	}
 	
+	
 	// Pagination version of finAllPosts
 	@Override
     public Page<PCMsgDTO> findAllPosts(Integer page, Integer size) {
