@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.dto.UserDTO;
 import com.example.demo.exception.DuplicateUserException;
 import com.example.demo.interfacemethods.UserInterface;
 import com.example.demo.model.Auth;
@@ -148,6 +149,27 @@ public class UserService implements UserInterface {
 		return userRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("User not found with ID:" + id));
 	}
+	
+	@Override
+	public List<UserDTO> findAllBlockUsersByUId(Integer UserId) {
+		User curUser = findUserById(UserId);
+		String blockList = curUser.getBlockList();
+
+        if (blockList == null || blockList.isEmpty()) {
+        	// if haven't block yet
+        	return new ArrayList<>(); // return an empty list instead of null
+        } else {
+        	List<String> blockIds = new ArrayList<>(Arrays.asList(blockList.split(",")));
+            List<UserDTO> blockedUsers = blockIds.stream()
+                .map(blockId -> {
+                    User blockedUser = findUserById(Integer.parseInt(blockId));
+                    return new UserDTO(blockedUser);
+                })
+                .collect(Collectors.toList());
+
+            return blockedUsers;
+        }
+	}
 
 	@Override
 	@Transactional(readOnly = false)
@@ -185,10 +207,10 @@ public class UserService implements UserInterface {
 	@Override
 	@Transactional(readOnly = false)
 	public void blockUserById(Integer UserId, Integer blockUserId) {
+		// can not block him/herself
 		User curUser = findUserById(UserId);
-		// to check whether we have this blockUser
 		findUserById(blockUserId);
-        
+
         String blockList = curUser.getBlockList();
 		// check whether blockList contains this id
         if (blockList == null || blockList.isEmpty()) {
@@ -269,4 +291,5 @@ public class UserService implements UserInterface {
 		userRepository.save(curUser);
 		return adjustAuth;
 	}
+
 }
