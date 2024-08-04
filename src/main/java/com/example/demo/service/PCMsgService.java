@@ -18,6 +18,7 @@ import com.example.demo.dto.PCMsgDTO;
 import com.example.demo.dto.PCMsgDetail;
 import com.example.demo.interfacemethods.PCMsgInterface;
 import com.example.demo.model.PCMsg;
+import com.example.demo.model.Tag;
 import com.example.demo.model.User;
 import com.example.demo.model.FollowList;
 import com.example.demo.model.Label;
@@ -48,6 +49,7 @@ public class PCMsgService implements PCMsgInterface{
 	@Autowired
     private FollowListRepository followListRepository;
 	
+	
 	private void changePCMsgStatusById(Integer id, String operation) {
 		try {
 			PCMsg curPCMsg = findPCMsgById(id);
@@ -57,6 +59,52 @@ public class PCMsgService implements PCMsgInterface{
 			throw new RuntimeException("Failed to " + operation + " post/comment with ID: " + id, e);
 		}
 	}
+	
+	//Count Posts
+	public Integer CountPosts() {
+		return pcmsgRepository.countPosts();
+	}
+	
+	//Count Comments
+	public Integer CountComments() {
+		return pcmsgRepository.countComments();
+	}
+
+	
+	//get tags count
+	public Map<String, Integer> getTagCounts() {
+        List<Label> labels = labelRepository.findAll();
+        List<PCMsg> pcMsgs = pcmsgRepository.findAll();
+        Map<String, Integer> tagCounts = new HashMap<>();
+
+        // Initialize all labels with zero count
+        for (Label label : labels) {
+            tagCounts.put(label.getLabel().toLowerCase(), 0);
+        }
+
+        for (PCMsg pcMsg : pcMsgs) {
+            if (pcMsg.getTag() != null && pcMsg.getTag().getTag() != null) {
+                String[] tags = pcMsg.getTag().getTag().split(",");
+                boolean hasValidTag = false;
+                for (String tag : tags) {
+                    tag = tag.trim().toLowerCase();
+                    if (!"none".equals(tag) && !tag.isEmpty()) {
+                        tagCounts.put(tag, tagCounts.getOrDefault(tag, 0) + 1);
+                        hasValidTag = true;
+                    }
+                }
+                if (!hasValidTag) {
+                    tagCounts.put("undefined", tagCounts.getOrDefault("undefined", 0) + 1);
+                }
+            } else {
+                tagCounts.put("undefined", tagCounts.getOrDefault("undefined", 0) + 1);
+            }
+        }
+        
+        return tagCounts;
+    }
+	
+	
 	
 	// count all Comments
 	private int countCommentsRecursively(Integer pcmsgId) {
@@ -96,6 +144,11 @@ public class PCMsgService implements PCMsgInterface{
 		return pcmsgRepository.findAllPostsOnly();
 	}
 	
+	@Override
+	public List<PCMsg> findTop5Posts() {
+		//i edited this, previous it is return comment too.
+		return pcmsgRepository.findTop5BySourceIdIsNullOrderByTimeStampDesc();
+	}
 	
 	// Pagination version of finAllPosts
 	@Override
@@ -181,7 +234,12 @@ public class PCMsgService implements PCMsgInterface{
 
         return sortedPosts;
 	}
-
+	
+	@Override
+	public List<PCMsg> findTop5HotPosts() {
+	    return findAllHotPosts().stream().limit(5).collect(Collectors.toList());
+	}
+	
 	@Override
 	public List<User> findAllSearchFollowingUser(String keyword) {
 		return userRepository.findAllFollowingByUserName(keyword);
@@ -335,6 +393,5 @@ public class PCMsgService implements PCMsgInterface{
 	public void hidePCMsgById(Integer id) {
 		upgradePCMsgStatusById(id,"hide");
 	}
-
 
 }

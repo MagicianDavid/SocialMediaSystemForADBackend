@@ -19,6 +19,8 @@ public class Label {
 	private String label;
 	
     private Integer penaltyScore;
+    
+    private String ColorCode;
 
 	public Label() {}
 	
@@ -44,6 +46,14 @@ public class Label {
 
 	public void setPenaltyScore(Integer penaltyScore) {
 		this.penaltyScore = penaltyScore;
+	}
+
+	public String getColorCode() {
+		return ColorCode;
+	}
+
+	public void setColorCode(String colorCode) {
+		ColorCode = colorCode;
 	}
 
 

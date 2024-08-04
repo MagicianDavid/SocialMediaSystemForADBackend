@@ -39,6 +39,12 @@ public class UserService implements UserInterface {
     @Autowired 
     private FollowListRepository followListRepository;
 	
+	//Count number of public users
+	public Integer CountUsers() {
+		return userRepository.countUsers();
+	}
+	
+    
 	// can not save or update the same employee/user
 	// use this method to handleDuplicateEmployee and throw exceptions accordingly 
 	private void handleDuplicateUser(User user) {

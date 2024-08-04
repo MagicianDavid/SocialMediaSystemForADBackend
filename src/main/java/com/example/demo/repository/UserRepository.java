@@ -11,6 +11,10 @@ import com.example.demo.model.User;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 
+	//Count number of public users
+	@Query("SELECT COUNT(u) FROM User u WHERE u.role.id = 1")
+	Integer countUsers();
+	
 	@Query("Select u from User as u where u.name like CONCAT('%',:k,'%') ")
 	List<User> findByName(@Param("k") String keyword);
 	

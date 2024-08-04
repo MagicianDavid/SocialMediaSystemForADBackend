@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -47,6 +48,12 @@ public class PCMsgController {
 	@Qualifier("pagedResourcesAssembler")
     private PagedResourcesAssembler<PCMsgDTO> pagedResourcesAssembler;
     
+	// get tags count
+	 @GetMapping("/tag-counts")
+	 public Map<String, Integer> getTagCounts() {
+	    return pcmsgService.getTagCounts();
+	 }
+	
 	// return all posts 
 	@GetMapping("/findAllPosts")
     public ResponseEntity<List<PCMsg>> getAllPosts() {
@@ -214,4 +221,18 @@ public class PCMsgController {
 		pcmsgService.deletePCMsgById(id);
         return ResponseEntity.noContent().build();
     }
+	
+	@GetMapping("/getTag/{id}")
+    public ResponseEntity<Tag> getTagById(@PathVariable("id") Integer id) {
+        Tag tag = tagService.getTagById(id);
+        return ResponseEntity.ok(tag);
+    }
+
+	// edit tag list
+    @PutMapping("/editTag/{id}")
+    public ResponseEntity<Tag> editTag(@PathVariable("id") Integer id, @RequestBody Tag tagForm) {
+        Tag updatedTag = tagService.updateReport(id, tagForm);
+        return ResponseEntity.ok(updatedTag);
+    }
+	
 }

@@ -8,6 +8,9 @@ import com.example.demo.model.User;
 import com.example.demo.model.UserStatus;
 
 public interface UserInterface {
+	
+	Integer CountUsers();
+
 	List<User> findAllUsers();
 	List<User> findUsersByName(String name);
 	List<User> findUsersByRole(String role);

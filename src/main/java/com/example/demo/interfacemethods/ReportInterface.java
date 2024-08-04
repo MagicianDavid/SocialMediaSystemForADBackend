@@ -4,6 +4,9 @@ import java.util.List;
 import com.example.demo.model.Report;
 
 public interface ReportInterface {
+	
+	Integer CountReports();
+	List<Report> findTop5ByOrderByDateDesc();
     List<Report> findAllReports();
     List<Report> findReportsByStatus(String status);
     List<Report> findReportsByUserId(Integer userId);

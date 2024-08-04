@@ -180,9 +180,6 @@ public class UserController {
     }
     
     
-    
-    
-    
     @ExceptionHandler(DuplicateUserException.class)
     public ResponseEntity<String> handleDuplicateUserException(DuplicateUserException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());

@@ -16,6 +16,16 @@ public class ReportService implements ReportInterface {
     private ReportRepository reportRepository;
 
     @Override
+	public Integer CountReports() {
+		return reportRepository.countReport();
+	}
+    
+    @Override
+	public List<Report> findTop5ByOrderByDateDesc() {
+		return reportRepository.findTop5ByOrderByStartDateDesc();
+	}
+      
+    @Override
     public List<Report> findAllReports() {
         return reportRepository.findAll();
     }

@@ -12,9 +12,16 @@ import com.example.demo.model.PCMsg;
 
 public interface PCMsgRepository extends JpaRepository<PCMsg,Integer> {
 
+	@Query("SELECT COUNT(p) FROM PCMsg p WHERE p.sourceId IS NULL")
+	Integer countPosts();
+	
+	@Query("SELECT COUNT(p) FROM PCMsg p WHERE p.sourceId IS NOT NULL")
+	Integer countComments();
+	
     @Query("SELECT p FROM PCMsg p ORDER BY p.timeStamp DESC")
     List<PCMsg> findAllPCMsgsOrderByDateDesc();
     
+
     @Query("SELECT p FROM PCMsg p WHERE p.sourceId IS NULL AND p.user.id = :userId ORDER BY p.timeStamp DESC ")
     List<PCMsg> findAllPostsByUserIdByDateDesc(@Param("userId") int userId);
     
@@ -25,13 +32,16 @@ public interface PCMsgRepository extends JpaRepository<PCMsg,Integer> {
     List<PCMsg> findAllFollowingPostsByUserId(@Param("followingUserIds") List<Integer> followingUserIds, 
                                               @Param("blockedUserIds") List<Integer> blockedUserIds);
     
-    
-    
+  
     @Query("Select p From PCMsg p WHERE p.sourceId IS NULL AND (p.content like CONCAT('%',:k,'%') OR p.user.username like CONCAT('%',:k,'%')) ORDER BY p.timeStamp DESC") 
 	List<PCMsg> SearchPostsByContentAndUserNameOrderByDateDesc(@Param("k") String keyword);
     
     @Query("SELECT p FROM PCMsg p WHERE p.sourceId IS NULL ORDER BY p.timeStamp DESC ")
     List<PCMsg> findAllPostsOnly();
+    
+    // For top 5 posts
+    @Query("SELECT p FROM PCMsg p WHERE p.sourceId IS NULL ORDER BY p.timeStamp DESC")
+    List<PCMsg> findTop5BySourceIdIsNullOrderByTimeStampDesc();
     
     // for pagination
     @Query("SELECT p FROM PCMsg p WHERE p.sourceId IS NULL ORDER BY p.timeStamp DESC ")
@@ -50,7 +60,8 @@ public interface PCMsgRepository extends JpaRepository<PCMsg,Integer> {
             @Param("blockedUserIds") List<Integer> blockedUserIds,
             @Param("userId") int userId);
 
+    
+  
+    
 
-//    @Query("SELECT p FROM PCMsg p WHERE p.sourceId = :sourceId")
-//    List<PCMsg> findByPostId(@Param("sourceId") int sourceId);
 }
