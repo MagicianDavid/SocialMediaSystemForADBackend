@@ -25,7 +25,7 @@ import com.example.demo.interfacemethods.UserInterface;
 import com.example.demo.model.Follower;
 import com.example.demo.model.Following;
 import com.example.demo.model.User;
-import com.example.demo.model.UserStatus;
+import com.example.demo.statusEnum.UserStatus;
 
 @RestController
 @RequestMapping("/api/user")
@@ -130,8 +130,8 @@ public class UserController {
     
     @PutMapping("{UserId}/block/{blockId}")
     public ResponseEntity<Void> blockUser(@PathVariable("UserId") Integer UserId, @PathVariable("blockId") Integer blockId) {
-        userService.blockUserById(UserId,blockId);
-        return ResponseEntity.noContent().build();
+    	userService.blockUserById(UserId,blockId);
+    	return ResponseEntity.noContent().build();
     }
     
     @PutMapping("{UserId}/unblock/{unblockId}")

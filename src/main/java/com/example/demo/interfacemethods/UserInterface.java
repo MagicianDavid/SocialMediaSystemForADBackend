@@ -5,7 +5,7 @@ import java.util.List;
 import com.example.demo.dto.UserDTO;
 import com.example.demo.model.Auth;
 import com.example.demo.model.User;
-import com.example.demo.model.UserStatus;
+import com.example.demo.statusEnum.UserStatus;
 
 public interface UserInterface {
 	List<User> findAllUsers();

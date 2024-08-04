@@ -31,6 +31,12 @@ public class NotificationController {
         }
     }
 
+    @GetMapping("/findAll")
+    public List<Notification> getAllNotifications() {
+        return notificationService.findAllNotifications();
+    }
+
+
     @GetMapping("/unReadList")
     public List<Notification> getAllUnreadNotifications() {
         return notificationService.findAllUnReadNotifications();

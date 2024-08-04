@@ -40,6 +40,15 @@ public class AuthService implements AuthInterface{
 	}
 
 	@Override
+	public Auth findAuthByRank(String rank) {
+		Auth findAuth = authRepository.findByRank(rank);
+		if (findAuth == null) {
+			throw new RuntimeException("Auth not found with rank:" + rank);
+		}
+		return findAuth;
+	}
+
+	@Override
 	@Transactional(readOnly = false)
 	public Auth saveAuth(Auth auth) {
 		handleDuplicateAuthException(auth);

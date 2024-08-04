@@ -11,7 +11,7 @@ import com.example.demo.interfacemethods.BanHistoryInterface;
 import com.example.demo.interfacemethods.UserInterface;
 import com.example.demo.model.BanHistory;
 import com.example.demo.model.User;
-import com.example.demo.model.UserStatus;
+import com.example.demo.statusEnum.UserStatus;
 import com.example.demo.repository.BanHistoryRepository;
 
 @Service      

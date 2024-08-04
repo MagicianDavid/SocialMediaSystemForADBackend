@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
 import java.util.List;
+
+import com.example.demo.statusEnum.ReportStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +25,7 @@ public class ReportController {
     }
 
     @GetMapping("/findByStatus/{status}")
-    public ResponseEntity<List<Report>> getReportsByStatus(@PathVariable("status") String status) {
+    public ResponseEntity<List<Report>> getReportsByStatus(@PathVariable("status") ReportStatus status) {
         List<Report> reports = reportService.findReportsByStatus(status);
         return ResponseEntity.ok(reports);
     }
@@ -59,6 +61,18 @@ public class ReportController {
     @PutMapping("/update/{id}")
     public ResponseEntity<Report> updateReport(@PathVariable("id") Integer id, @RequestBody Report report) {
         Report updatedReport = reportService.updateReport(id, report);
+        return ResponseEntity.ok(updatedReport);
+    }
+
+    @PutMapping("/updateStatus/{id}/{status}")
+    public ResponseEntity<Report> updateReportStatus(@PathVariable("id") Integer id, @PathVariable("status") ReportStatus status) {
+        Report updatedReport = reportService.updateReportStatusById(id, status);
+        return ResponseEntity.ok(updatedReport);
+    }
+
+    @PutMapping("/closeCaseReport/{id}")
+    public ResponseEntity<Report> closeCaseReport(@PathVariable("id") Integer id) {
+        Report updatedReport = reportService.caseCloseReport(id);
         return ResponseEntity.ok(updatedReport);
     }
 

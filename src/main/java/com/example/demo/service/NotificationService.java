@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.interfacemethods.NotificationInterface;
 import com.example.demo.model.Notification;
-import com.example.demo.model.NotificationStatus;
+import com.example.demo.statusEnum.NotificationStatus;
 import com.example.demo.repository.NotificationRepository;
 
 @Service      

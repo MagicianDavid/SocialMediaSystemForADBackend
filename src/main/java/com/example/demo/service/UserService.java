@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import com.example.demo.exception.DuplicateUserException;
 import com.example.demo.interfacemethods.UserInterface;
 import com.example.demo.model.Auth;
 import com.example.demo.model.User;
-import com.example.demo.model.UserStatus;
+import com.example.demo.statusEnum.UserStatus;
 import com.example.demo.model.Role;
 import com.example.demo.repository.AuthRepository;
 import com.example.demo.repository.RoleRepository;
@@ -34,24 +35,21 @@ public class UserService implements UserInterface {
 
 	@Autowired
 	private AuthRepository authRepository;
-	
+
 	// can not save or update the same employee/user
 	// use this method to handleDuplicateEmployee and throw exceptions accordingly 
 	private void handleDuplicateUser(User user) {
 		// check user_name & email
 		// find User by user_name
 		List<User> findUserList = userRepository.findByUserNameIgnoreCase(user.getUsername());
-		if (findUserList.size() > 0) {
+		if (!findUserList.isEmpty()) {
 			List<String> emailList = findUserList.stream().map(f -> f.getEmail().toLowerCase()).distinct()
-					.collect(Collectors.toList());
+					.toList();
 			// if same user_name and same email, we consider it the same user
 			if (emailList.contains(user.getEmail().toLowerCase())) {
 				// save fail
 				throw new DuplicateUserException("User already exists: " + user.getUsername());
 			}
-		}else {
-			// no user found, then throw error
-//			throw new RuntimeException("Employee not found with user_name:" + employee.getUsername());
 		}
 	}
 	
@@ -103,14 +101,15 @@ public class UserService implements UserInterface {
 		// Encrypt the password before saving (do it at front end	)
 		// can do the encryption both back end & front end
 		// employee.setPassword(PasswordUtil.encodePassword(employee.getPassword()));
-		
-		// Set the default role and authorization for new employees
-		// TODO: actually this kind of default setting is very strange
-		// since u are hard coding the User role but what if there's no role or authorization?
+
 		Role defaultRole = roleRepository.findByTypeIgnoreCase("User");
 		List<Auth> allAuth = authRepository.findAll();
-		Auth defaultAuth = new Auth();
-		if (allAuth.size() > 0) {
+
+		// Set the default role and authorization for new employees/users
+		// here we set their auth to "FixedRankForSocialScore:111-120"
+		Auth defaultAuth = authRepository.findByRank("FixedRankForSocialScore:111-120");
+		if (!allAuth.isEmpty()) {
+			// what will happen if there's no role or authorization? maybe when JUnit test we will add auth
 			// set the first authorization as default authorization ?
 			defaultAuth = allAuth.get(0);
 		} else {
@@ -160,14 +159,13 @@ public class UserService implements UserInterface {
         	return new ArrayList<>(); // return an empty list instead of null
         } else {
         	List<String> blockIds = new ArrayList<>(Arrays.asList(blockList.split(",")));
-            List<UserDTO> blockedUsers = blockIds.stream()
-                .map(blockId -> {
-                    User blockedUser = findUserById(Integer.parseInt(blockId));
-                    return new UserDTO(blockedUser);
-                })
-                .collect(Collectors.toList());
 
-            return blockedUsers;
+            return  blockIds.stream()
+					.map(blockId -> {
+						User blockedUser = findUserById(Integer.parseInt(blockId));
+						return new UserDTO(blockedUser);
+					})
+					.collect(Collectors.toList());
         }
 	}
 
@@ -190,9 +188,9 @@ public class UserService implements UserInterface {
 		try {
 			User curUser = findUserById(id);
 			Integer curScore = curUser.getSocialScore();
-			if (operation == "add") {
+			if (operation.equals("add")) {
 				curScore+=adjustScore;
-			} else if (operation == "minus") {
+			} else if (operation.equals("minus")) {
 				curScore-=adjustScore;
 			}
 			if (curScore > 120) curScore = 120;
@@ -206,26 +204,33 @@ public class UserService implements UserInterface {
 	
 	@Override
 	@Transactional(readOnly = false)
-	public void blockUserById(Integer UserId, Integer blockUserId) {
-		// can not block him/herself
-		User curUser = findUserById(UserId);
-		findUserById(blockUserId);
+	public void blockUserById(Integer userId, Integer blockUserId) {
 
-        String blockList = curUser.getBlockList();
-		// check whether blockList contains this id
-        if (blockList == null || blockList.isEmpty()) {
-            blockList = blockUserId.toString();
-        } else {
-        	List<String> blockIds = new ArrayList<>(Arrays.asList(blockList.split(",")));
-        	if (blockIds.contains(blockUserId.toString())) {
-        		blockIds.remove(blockUserId.toString());
-        		blockList = String.join(",", blockIds);
-        	} else {            
-            	blockList += "," + blockUserId;
-            }
-        }
-        curUser.setBlockList(blockList);
-        userRepository.save(curUser);
+		// Can not block him/herself
+		if (Objects.equals(userId, blockUserId)) {
+			throw new RuntimeException("User cannot block him/herself");
+		}
+
+	    User curUser = findUserById(userId);
+	    findUserById(blockUserId);
+
+	    String blockList = curUser.getBlockList();
+	    List<String> blockIds;
+
+	    if (blockList == null || blockList.isEmpty()) {
+	        blockIds = new ArrayList<>();
+	    } else {
+	        blockIds = new ArrayList<>(Arrays.asList(blockList.split(",")));
+	    }
+
+	    if (blockIds.contains(blockUserId.toString())) {
+	        blockIds.remove(blockUserId.toString());
+	    } else {
+	        blockIds.add(blockUserId.toString());
+	    }
+
+	    curUser.setBlockList(String.join(",", blockIds));
+	    userRepository.save(curUser);
 	}
 	
 	@Override
@@ -273,7 +278,7 @@ public class UserService implements UserInterface {
 	public Auth checkUserSocialScoreThenAdjustAuth(Integer userId) {
 		User curUser = findUserById(userId);
 		Integer curSocialScore = curUser.getSocialScore();
-		Integer curRank = (curSocialScore + 9) / 10;
+		int curRank = (curSocialScore + 9) / 10;
 		// set socialScore 1-60 as a list for judgment
 		List<Integer> fistRandList = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 6));
 		// default set format of "FixedRankForSocialScore:1-60" "FixedRankForSocialScore:0"

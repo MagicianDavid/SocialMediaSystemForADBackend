@@ -2,8 +2,8 @@ package com.example.demo.model;
 
 import java.time.LocalDateTime;
 
+import com.example.demo.statusEnum.ReportStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Report {
@@ -15,37 +15,40 @@ public class Report {
     @JoinColumn(name = "type_of_report_id")
     private TypeOfReport typeOfReport;
 
-    @NotNull
     private String reason;
 
-    @NotNull
-    private String status; // Complete, Pending, Appeal
+    @Enumerated(EnumType.STRING)
+    private ReportStatus status; // Complete, Pending, Appeal
 
-    @Column(name = "start_date", columnDefinition = "TIMESTAMP")
-    private LocalDateTime startDate;
+    @Column(name = "report_date", columnDefinition = "TIMESTAMP")
+    private LocalDateTime reportDate;
 
-    @Column(name = "end_date", columnDefinition = "TIMESTAMP")
-    private LocalDateTime endDate;
+    @Column(name = "case_close_date", columnDefinition = "TIMESTAMP")
+    private LocalDateTime caseCloseDate;
 
     private String remarks;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User reportUser;
+
+    // this is the id we are reporting (it could be pcmsg_id or user_id)
+    private Integer reportedId;
 
     // Constructors, getters and setters
 
     public Report() {
     }
 
-    public Report(TypeOfReport typeOfReport, String reason, String status, LocalDateTime startDate, String remarks, LocalDateTime endDate, User user) {
+    public Report(TypeOfReport typeOfReport, String reason, ReportStatus status, LocalDateTime reportDate, LocalDateTime caseCloseDate,String remarks, User user, Integer reportedId) {
         this.typeOfReport = typeOfReport;
         this.reason = reason;
         this.status = status;
-        this.startDate = startDate;
+        this.reportDate = reportDate;
+        this.caseCloseDate = caseCloseDate;
         this.remarks = remarks;
-        this.endDate = endDate;
-        this.user = user;
+        this.reportUser = user;
+        this.reportedId = reportedId;
     }
 
     public Integer getId() {
@@ -72,29 +75,25 @@ public class Report {
         this.reason = reason;
     }
 
-    public String getStatus() {
+    public ReportStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ReportStatus status) {
         this.status = status;
     }
 
-    public LocalDateTime getStartDate() {
-        return startDate;
+    public LocalDateTime getReportDate() {
+        return reportDate;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
+    public void setReportDate(LocalDateTime reportDate) {
+        this.reportDate = reportDate;
     }
 
-    public LocalDateTime getEndDate() {
-        return endDate;
-    }
+    public LocalDateTime getCaseCloseDate() {return caseCloseDate;}
 
-    public void setEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
-    }
+    public void setCaseCloseDate(LocalDateTime caseCloseDate) {this.caseCloseDate = caseCloseDate;}
 
     public String getRemarks() {
         return remarks;
@@ -105,10 +104,16 @@ public class Report {
     }
 
     public User getUser() {
-        return user;
+        return reportUser;
     }
 
     public void setUser(User user) {
-        this.user = user;
+        this.reportUser = user;
     }
+
+    public Integer getReportedId() {
+        return reportedId;
+    }
+
+    public void setReportedId(Integer reportedId) {this.reportedId = reportedId;}
 }

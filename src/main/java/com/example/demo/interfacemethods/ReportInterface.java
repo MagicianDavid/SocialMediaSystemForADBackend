@@ -2,14 +2,19 @@ package com.example.demo.interfacemethods;
 
 import java.util.List;
 import com.example.demo.model.Report;
+import com.example.demo.statusEnum.ReportStatus;
 
 public interface ReportInterface {
     List<Report> findAllReports();
-    List<Report> findReportsByStatus(String status);
+    List<Report> findReportsByStatus(ReportStatus status);
     List<Report> findReportsByUserId(Integer userId);
     List<Report> findReportsByTypeOfReportId(Integer typeOfReportId);
     Report findReportById(Integer id);
+
+    // CRUD
     Report saveReport(Report report);
     Report updateReport(Integer id, Report report);
+    Report updateReportStatusById(Integer id, ReportStatus status);
+    Report caseCloseReport(Integer id);
     void deleteReportById(Integer id);
 }

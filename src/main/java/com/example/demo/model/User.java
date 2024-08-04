@@ -1,6 +1,8 @@
 package com.example.demo.model;
 
 import java.time.LocalDate;
+
+import com.example.demo.statusEnum.UserStatus;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -43,7 +45,7 @@ public class User {
 	@Column(length = 35)
 	private String country;
 
-	@Enumerated(EnumType.STRING) // 或 EnumType.ORDINAL
+	@Enumerated(EnumType.STRING) // or EnumType.ORDINAL
 	@Column(length = 35)
 	private UserStatus status;
 
@@ -71,7 +73,7 @@ public class User {
 	@JoinColumn(name = "auth_id")
 	private Auth auth;
 	
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "reportUser", cascade = CascadeType.ALL)
 	private List<Report> reports;
 
 	// ----------XT-----------------

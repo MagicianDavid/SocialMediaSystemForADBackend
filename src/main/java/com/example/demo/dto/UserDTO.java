@@ -3,7 +3,7 @@ package com.example.demo.dto;
 import java.time.LocalDate;
 
 import com.example.demo.model.User;
-import com.example.demo.model.UserStatus;
+import com.example.demo.statusEnum.UserStatus;
 
 public class UserDTO {
 	

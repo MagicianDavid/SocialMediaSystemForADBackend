@@ -15,9 +15,9 @@ import com.example.demo.interfacemethods.NotificationInterface;
 import com.example.demo.interfacemethods.UserInterface;
 import com.example.demo.model.Auth;
 import com.example.demo.model.Notification;
-import com.example.demo.model.NotificationStatus;
+import com.example.demo.statusEnum.NotificationStatus;
 import com.example.demo.model.User;
-import com.example.demo.model.UserStatus;
+import com.example.demo.statusEnum.UserStatus;
 import com.example.demo.service.EmailService;
 
 @RestController
