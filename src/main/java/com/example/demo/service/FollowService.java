@@ -13,6 +13,7 @@ import com.example.demo.repository.FollowListRepository;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,26 +30,24 @@ public class FollowService implements FollowInterface {
     @Override
     public List<User> getFollowers(User user) {
     	 //filter out block user
-		 String blockList = user.getBlockList();
-		 List<String> blockedUserIds = Arrays.asList(blockList.split(","));
+    	List<Integer> blockedUserIds = user.getBlockedUserIds();
 
     	 List<FollowList> followers = followListRepository.findByFollowedUser(user);
          return followers.stream()
                          .map(FollowList::getFollowingUser)
-                         .filter(follower -> !blockedUserIds.contains(follower.getId().toString()))
+                         .filter(follower -> !blockedUserIds.contains(follower.getId()))
                          .collect(Collectors.toList());
     }
 
     @Override
     public List<User> getFollowings(User user) {
     	
-	   	String blockList = user.getBlockList();
-		List<String> blockedUserIds = Arrays.asList(blockList.split(","));
+    	List<Integer> blockedUserIds = user.getBlockedUserIds();
 		
     	List<FollowList> followings = followListRepository.findByFollowingUser(user);
         return followings.stream()
                          .map(FollowList::getFollowedUser)
-                         .filter(follower -> !blockedUserIds.contains(follower.getId().toString()))
+                         .filter(follower -> !blockedUserIds.contains(follower.getId()))
                          .collect(Collectors.toList());
     }
     

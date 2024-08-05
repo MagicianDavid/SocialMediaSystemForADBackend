@@ -6,8 +6,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
+import java.util.stream.Collectors;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -249,5 +251,15 @@ public class User {
 		this.followings = followings;
 	}
 
+	public List<Integer> getBlockedUserIds() {
+        if (blockList == null || blockList.isEmpty()) {
+            return new ArrayList<>(); // Return an empty list if blockList is null or empty
+        } else {
+        	  return Arrays.stream(blockList.split(","))
+                      .filter(blockId -> !blockId.trim().isEmpty()) // Filter out empty strings
+                      .map(Integer::parseInt) // Convert to Integer
+                      .collect(Collectors.toList()); // Collect as List
+        }
+    }
 	
 }

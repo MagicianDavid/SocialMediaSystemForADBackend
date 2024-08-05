@@ -177,16 +177,19 @@ public class PCMsgService implements PCMsgInterface{
                 .orElseThrow(() -> new RuntimeException("User not found with ID:" + userId));
 		
 		List<FollowList> followings = user.getFollowings();
-		String blockList = user.getBlockList();
+		
+		//String blockList = user.getBlockList();
+    	List<Integer> blockedUserIds = user.getBlockedUserIds();
 
+	
         List<Integer> followingUserIds = followings.stream()
                 .map(FollowList -> FollowList.getFollowedUser().getId())
                 .collect(Collectors.toList());
 
-        List<Integer> blockedUserIds = Arrays.stream(blockList.split(","))
-                .filter(blockId -> !blockId.trim().isEmpty())
-                .map(Integer::parseInt)
-                .collect(Collectors.toList());
+//        List<Integer> blockedUserIds = Arrays.stream(blockList.split(","))
+//                .filter(blockId -> !blockId.trim().isEmpty())
+//                .map(Integer::parseInt)
+//                .collect(Collectors.toList());
 
         return pcmsgRepository.findAllFollowingPostsByUserId(followingUserIds, blockedUserIds);
 	}
@@ -197,16 +200,16 @@ public class PCMsgService implements PCMsgInterface{
                 .orElseThrow(() -> new RuntimeException("User not found with ID:" + userId));
 		
 		List<FollowList> followings = user.getFollowings();
-		String blockList = user.getBlockList();
+    	List<Integer> blockedUserIds = user.getBlockedUserIds();
 
         List<Integer> followingUserIds = followings.stream()
                 .map(FollowList -> FollowList.getFollowedUser().getId())
                 .collect(Collectors.toList());
 
-        List<Integer> blockedUserIds = Arrays.stream(blockList.split(","))
-                .filter(blockId -> !blockId.trim().isEmpty()) 
-                .map(Integer::parseInt)
-                .collect(Collectors.toList());
+//        List<Integer> blockedUserIds = Arrays.stream(blockList.split(","))
+//                .filter(blockId -> !blockId.trim().isEmpty()) 
+//                .map(Integer::parseInt)
+//                .collect(Collectors.toList());
         
         return pcmsgRepository.findAllFollowingPostsAndNotDeletedByUserId(followingUserIds, blockedUserIds, userId);
 	}
