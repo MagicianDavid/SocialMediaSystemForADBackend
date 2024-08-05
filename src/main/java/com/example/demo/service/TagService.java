@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.interfacemethods.TagInterface;
+import com.example.demo.model.Report;
 import com.example.demo.model.Tag;
 import com.example.demo.repository.TagRepository;
 
@@ -20,6 +21,16 @@ public class TagService implements TagInterface{
 		return tagRepository.save(tag);
 	}
 
+    @Override
+    @Transactional(readOnly = false)
+    public Tag updateReport(Integer id, Tag TagForm) {
+        Tag existingTag = getTagById(id);
+        existingTag.setRemark(TagForm.getRemark());
+        existingTag.setTag(TagForm.getTag());
+        return tagRepository.save(existingTag);
+    }
+	
+	
 	@Override
 	public Tag getTagById(Integer id) {
 		return tagRepository.findById(id).orElse(null);

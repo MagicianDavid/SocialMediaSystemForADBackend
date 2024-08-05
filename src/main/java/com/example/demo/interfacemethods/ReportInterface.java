@@ -7,6 +7,9 @@ import com.example.demo.model.Report;
 import com.example.demo.statusEnum.ReportStatus;
 
 public interface ReportInterface {
+	
+	Integer CountReports();
+	List<Report> findTop5ByOrderByDateDesc();
     List<Report> findAllReports();
     List<Report> findReportsByStatus(ReportStatus status);
     List<Report> findReportsByUserId(Integer userId);

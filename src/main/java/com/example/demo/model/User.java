@@ -5,10 +5,13 @@ import java.time.LocalDate;
 import com.example.demo.statusEnum.UserStatus;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
+import java.util.stream.Collectors;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -77,13 +80,14 @@ public class User {
 	private List<Report> reports;
 
 	// ----------XT-----------------
+    
 	@OneToMany(mappedBy = "followedUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<Follower> followers;
+    @JsonIgnore
+    private List<FollowList> followers;
 
     @OneToMany(mappedBy = "followingUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<Following> followings;
+    @JsonIgnore
+    private List<FollowList> followings;
 
 //	@OneToMany(mappedBy = "banUser", cascade = CascadeType.ALL)
 //	private List<BanHistory> banHistories;
@@ -233,20 +237,31 @@ public class User {
 		this.reports = reports;
 	}
 	
-	public List<Follower> getFollowers() {
+	public List<FollowList> getFollowers() {
 		return followers;
 	}
 
-	public void setFollowers(List<Follower> followers) {
+	public void setFollowers(List<FollowList> followers) {
 		this.followers = followers;
 	}
 
-	public List<Following> getFollowings() {
+	public List<FollowList> getFollowings() {
 		return followings;
 	}
 
-	public void setFollowings(List<Following> followings) {
+	public void setFollowings(List<FollowList> followings) {
 		this.followings = followings;
 	}
 
+	public List<Integer> getBlockedUserIds() {
+        if (blockList == null || blockList.isEmpty()) {
+            return new ArrayList<>(); // Return an empty list if blockList is null or empty
+        } else {
+        	  return Arrays.stream(blockList.split(","))
+                      .filter(blockId -> !blockId.trim().isEmpty()) // Filter out empty strings
+                      .map(Integer::parseInt) // Convert to Integer
+                      .collect(Collectors.toList()); // Collect as List
+        }
+    }
+	
 }
