@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -28,6 +29,7 @@ public class PCMsg {
 	
 	@ManyToOne
 	@JoinColumn(name="User_id")
+    @JsonBackReference
 	private User user;
 	
 	@OneToOne(mappedBy = "pcmsg", cascade = CascadeType.ALL, orphanRemoval = true)

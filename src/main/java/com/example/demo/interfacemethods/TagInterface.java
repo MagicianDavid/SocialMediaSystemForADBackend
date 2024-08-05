@@ -5,4 +5,5 @@ import com.example.demo.model.Tag;
 public interface TagInterface {
 	Tag saveTag(Tag tag);
 	Tag getTagById(Integer id);
+	Tag updateReport(Integer id, Tag TagForm);
 }

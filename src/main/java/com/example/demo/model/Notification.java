@@ -15,7 +15,7 @@ import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Notification {
-	
+
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column (name = "Notification Id")
@@ -45,10 +45,19 @@ public class Notification {
 	}
 	
 	//	Getters and Setters
-	public User getUser() {
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public User getNotificationUser() {
 		return notificationUser;
 	}
-	public void setUser(User notificationUser) {
+
+	public void setNotificationUser(User notificationUser) {
 		this.notificationUser = notificationUser;
 	}
 	public String getMessage() {

@@ -8,8 +8,9 @@ public interface NotificationInterface {
 	
 	Notification findNotificationById(Integer id);
 	List<Notification> findAllNotifications();
-	List<Notification> findAllUnReadNotifications();
-	List<Notification> findAllReadNotifications();
+	List<Notification> findAllNotificationsByUserId(Integer userId);
+	List<Notification> findAllUnReadNotificationsByUserId(Integer userId);
+	List<Notification> findAllReadNotificationsByUserId(Integer userId);
 	Boolean isNotificationReadById(Integer id);
 	// CRUD
 	Notification saveNotification(Notification notification);

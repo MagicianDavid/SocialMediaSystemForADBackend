@@ -19,6 +19,7 @@ import com.example.demo.model.User;
 import com.example.demo.statusEnum.UserStatus;
 import com.example.demo.model.Role;
 import com.example.demo.repository.AuthRepository;
+import com.example.demo.repository.FollowListRepository;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.util.PasswordUtil;
@@ -35,6 +36,14 @@ public class UserService implements UserInterface {
 
 	@Autowired
 	private AuthRepository authRepository;
+
+    @Autowired 
+    private FollowListRepository followListRepository;
+	
+	//Count number of public users
+	public Integer CountUsers() {
+		return userRepository.countUsers();
+	}
 
 	// can not save or update the same employee/user
 	// use this method to handleDuplicateEmployee and throw exceptions accordingly 
@@ -107,11 +116,12 @@ public class UserService implements UserInterface {
 
 		// Set the default role and authorization for new employees/users
 		// here we set their auth to "FixedRankForSocialScore:111-120"
-		Auth defaultAuth = authRepository.findByRank("FixedRankForSocialScore:111-120");
+
+		Auth defaultAuth;
 		if (!allAuth.isEmpty()) {
 			// what will happen if there's no role or authorization? maybe when JUnit test we will add auth
 			// set the first authorization as default authorization ?
-			defaultAuth = allAuth.get(0);
+			defaultAuth = authRepository.findByRank("FixedRankForSocialScore:111-120");
 		} else {
 			defaultAuth = null;
 		}
@@ -211,26 +221,26 @@ public class UserService implements UserInterface {
 			throw new RuntimeException("User cannot block him/herself");
 		}
 
-	    User curUser = findUserById(userId);
-	    findUserById(blockUserId);
+		User curUser = findUserById(userId);
+		findUserById(blockUserId);
 
-	    String blockList = curUser.getBlockList();
-	    List<String> blockIds;
+		String blockList = curUser.getBlockList();
+		List<String> blockIds;
 
-	    if (blockList == null || blockList.isEmpty()) {
-	        blockIds = new ArrayList<>();
-	    } else {
-	        blockIds = new ArrayList<>(Arrays.asList(blockList.split(",")));
-	    }
+		if (blockList == null || blockList.isEmpty()) {
+			blockIds = new ArrayList<>();
+		} else {
+			blockIds = new ArrayList<>(Arrays.asList(blockList.split(",")));
+		}
 
-	    if (blockIds.contains(blockUserId.toString())) {
-	        blockIds.remove(blockUserId.toString());
-	    } else {
-	        blockIds.add(blockUserId.toString());
-	    }
+		if (blockIds.contains(blockUserId.toString())) {
+			blockIds.remove(blockUserId.toString());
+		} else {
+			blockIds.add(blockUserId.toString());
+		}
 
-	    curUser.setBlockList(String.join(",", blockIds));
-	    userRepository.save(curUser);
+		curUser.setBlockList(String.join(",", blockIds));
+		userRepository.save(curUser);
 	}
 	
 	@Override

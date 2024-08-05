@@ -36,24 +36,28 @@ public class NotificationController {
         return notificationService.findAllNotifications();
     }
 
-
-    @GetMapping("/unReadList")
-    public List<Notification> getAllUnreadNotifications() {
-        return notificationService.findAllUnReadNotifications();
+    @GetMapping("/findAllByUserId/{userId}")
+    public List<Notification> getAllNotificationsByUserId(@PathVariable("userId") Integer userId) {
+        return notificationService.findAllNotificationsByUserId(userId);
     }
 
-    @GetMapping("/readList")
-    public List<Notification> getAllReadNotifications() {
-        return notificationService.findAllReadNotifications();
+    @GetMapping("/unReadList/{userId}")
+    public List<Notification> getAllUnreadNotificationsByUserId(@PathVariable("userId") Integer userId) {
+        return notificationService.findAllUnReadNotificationsByUserId(userId);
+    }
+
+    @GetMapping("/readList/{userId}")
+    public List<Notification> getAllReadNotificationsByUserId(@PathVariable("userId") Integer userId) {
+        return notificationService.findAllReadNotificationsByUserId(userId);
     }
 
     @GetMapping("/isRead/{id}")
-    public Boolean isNotificationRead(@PathVariable Integer id) {
+    public Boolean isNotificationRead(@PathVariable("id") Integer id) {
         return notificationService.isNotificationReadById(id);
     }
 
     @PutMapping("/updateStatusToRead/{id}")
-    public void markNotificationAsRead(@PathVariable Integer id) {
+    public void markNotificationAsRead(@PathVariable("id") Integer id) {
         notificationService.updateNotificationStatusById(id);
     }
 
@@ -63,12 +67,12 @@ public class NotificationController {
     }
 
     @PutMapping("/update/{id}")
-    public Notification updateNotification(@PathVariable Integer id, @RequestBody Notification newNotification) {
+    public Notification updateNotification(@PathVariable("id") Integer id, @RequestBody Notification newNotification) {
         return notificationService.updateNotificationById(id, newNotification);
     }
 
     @DeleteMapping("/delete{id}")
-    public void deleteNotification(@PathVariable Integer id) {
+    public void deleteNotification(@PathVariable("id") Integer id) {
         notificationService.deleteNotificationById(id);
     }
 }

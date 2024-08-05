@@ -42,6 +42,16 @@ public class AuthController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/findByRank/{rank}")
+    public ResponseEntity<Auth> getAuthByRank(@PathVariable("rank") String rank) {
+        Auth auth = authService.findAuthByRank(rank);
+        if (auth != null) {
+            return ResponseEntity.ok(auth);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
     
     // after user login get auth and perform menu and url block etc.
     @GetMapping("/findByUserId/{userId}")

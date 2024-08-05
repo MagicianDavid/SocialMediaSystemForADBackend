@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,13 +31,21 @@ public class NotificationService implements NotificationInterface {
 	}
 
 	@Override
-	public List<Notification> findAllUnReadNotifications() {
-		return notificationRepository.findByNotificationStatus(NotificationStatus.Unread);
+	public List<Notification> findAllNotificationsByUserId(Integer userId) {
+		return notificationRepository.findAll()
+				.stream()
+				.filter(notif-> notif.getNotificationUser().getId().equals(userId))
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<Notification> findAllReadNotifications() {
-		return notificationRepository.findByNotificationStatus(NotificationStatus.Read);
+	public List<Notification> findAllUnReadNotificationsByUserId(Integer userId) {
+		return notificationRepository.findByNotificationStatusByUserId(userId, NotificationStatus.Unread);
+	}
+
+	@Override
+	public List<Notification> findAllReadNotificationsByUserId(Integer userId) {
+		return notificationRepository.findByNotificationStatusByUserId(userId, NotificationStatus.Read);
 	}
 
 	@Override
@@ -65,6 +74,7 @@ public class NotificationService implements NotificationInterface {
 	@Transactional(readOnly = false)
 	public Notification updateNotificationById(Integer id, Notification newNotification) {
 		return notificationRepository.findById(id).map(notification -> {
+			notification.setNotificationUser(newNotification.getNotificationUser());
             notification.setMessage(newNotification.getMessage());
             notification.setNotificationTime(newNotification.getNotificationTime());
             notification.setNotificationStatus(newNotification.getNotificationStatus());

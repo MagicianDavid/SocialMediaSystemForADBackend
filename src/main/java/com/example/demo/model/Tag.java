@@ -25,10 +25,6 @@ public class Tag {
 	    @JsonBackReference(value = "pcmsg-tag")
 	    private PCMsg pcmsg;
 		
-		@ManyToOne
-		@JoinColumn(name="Label_id")
-		private Label label;
-		
 		private String remark;
 		
 	public Tag() {}
