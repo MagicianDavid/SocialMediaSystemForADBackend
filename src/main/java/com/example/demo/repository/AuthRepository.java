@@ -8,10 +8,10 @@ import com.example.demo.model.Auth;
 public interface AuthRepository  extends JpaRepository<Auth,Integer>{
 	
 	@Query("SELECT COUNT(a) > 0 FROM Auth a WHERE a.rank = :rank AND a.menuViewJason = :menuViewJason")
-	public Boolean checkDuplicateRankAndMenuViewJason(String rank,String menuViewJason);
+	Boolean checkDuplicateRankAndMenuViewJason(String rank,String menuViewJason);
 	
 	@Query("SELECT a FROM Auth a JOIN a.users u WHERE u.id = :userId")
-	public Auth findByUserId(Integer userId);
+	Auth findByUserId(Integer userId);
 	
-	public Auth findByRank(String rank);
+	Auth findByRank(String rank);
 }

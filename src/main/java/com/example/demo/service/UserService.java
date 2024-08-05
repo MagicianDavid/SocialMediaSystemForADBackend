@@ -107,11 +107,12 @@ public class UserService implements UserInterface {
 
 		// Set the default role and authorization for new employees/users
 		// here we set their auth to "FixedRankForSocialScore:111-120"
-		Auth defaultAuth = authRepository.findByRank("FixedRankForSocialScore:111-120");
+
+		Auth defaultAuth;
 		if (!allAuth.isEmpty()) {
 			// what will happen if there's no role or authorization? maybe when JUnit test we will add auth
 			// set the first authorization as default authorization ?
-			defaultAuth = allAuth.get(0);
+			defaultAuth = authRepository.findByRank("FixedRankForSocialScore:111-120");
 		} else {
 			defaultAuth = null;
 		}

@@ -2,7 +2,10 @@ package com.example.demo.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.example.demo.dto.LabelDTO;
+import com.example.demo.model.Label;
 import com.example.demo.statusEnum.ReportStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,8 +37,9 @@ public class ReportService implements ReportInterface {
     }
 
     @Override
-    public List<Report> findReportsByTypeOfReportId(Integer typeOfReportId) {
-        return reportRepository.findByTypeOfReportId(typeOfReportId);
+    public LabelDTO findLabelByReportId(Integer id) {
+        Label label = reportRepository.findLabelByReportId(id);
+        return new LabelDTO(label);
     }
 
     @Override
@@ -53,13 +57,13 @@ public class ReportService implements ReportInterface {
     @Transactional(readOnly = false)
     public Report updateReport(Integer id, Report report) {
         Report existingReport = findReportById(id);
-        existingReport.setTypeOfReport(report.getTypeOfReport());
+        existingReport.setLabel(report.getLabel());
         existingReport.setReason(report.getReason());
         existingReport.setStatus(report.getStatus());
         existingReport.setReportDate(report.getReportDate());
         existingReport.setCaseCloseDate(report.getCaseCloseDate());
         existingReport.setRemarks(report.getRemarks());
-        existingReport.setUser(report.getUser());
+        existingReport.setReportUser(report.getReportUser());
         existingReport.setReportedId(report.getReportedId());
         return reportRepository.save(existingReport);
     }
@@ -74,6 +78,7 @@ public class ReportService implements ReportInterface {
     @Override
     public Report caseCloseReport(Integer id) {
         Report report = findReportById(id);
+        report.setStatus(ReportStatus.Complete);
         report.setCaseCloseDate(LocalDateTime.now());
         return reportRepository.save(report);
     }

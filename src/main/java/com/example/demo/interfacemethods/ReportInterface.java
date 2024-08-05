@@ -1,6 +1,8 @@
 package com.example.demo.interfacemethods;
 
 import java.util.List;
+
+import com.example.demo.dto.LabelDTO;
 import com.example.demo.model.Report;
 import com.example.demo.statusEnum.ReportStatus;
 
@@ -8,7 +10,7 @@ public interface ReportInterface {
     List<Report> findAllReports();
     List<Report> findReportsByStatus(ReportStatus status);
     List<Report> findReportsByUserId(Integer userId);
-    List<Report> findReportsByTypeOfReportId(Integer typeOfReportId);
+    LabelDTO findLabelByReportId(Integer reportId);
     Report findReportById(Integer id);
 
     // CRUD

@@ -15,13 +15,15 @@ public class Label {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
+
 	private String label;
-	
-	@OneToMany(mappedBy = "label")
-	private List<Tag> tags;
-	
+
+	private Integer penaltyScore;
+
+	private String ColorCode;
+
 	public Label() {}
-	
+
 	public Label(String label ) {
 		this.label=label;
 	}
@@ -37,13 +39,21 @@ public class Label {
 	public void setLabel(String label) {
 		this.label = label;
 	}
-	public List<Tag> getTag() {
-		return tags;
+
+	public Integer getPenaltyScore() {
+		return penaltyScore;
 	}
-	
-	@Override
-	public String toString() {
-		return "Label [id=" + id + ", label=" + label + ", tag=" + tags + "]";
+
+	public void setPenaltyScore(Integer penaltyScore) {
+		this.penaltyScore = penaltyScore;
+	}
+
+	public String getColorCode() {
+		return ColorCode;
+	}
+
+	public void setColorCode(String colorCode) {
+		ColorCode = colorCode;
 	}
 
 

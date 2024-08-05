@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import java.util.List;
 
+import com.example.demo.dto.LabelDTO;
+import com.example.demo.model.Label;
 import com.example.demo.statusEnum.ReportStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,10 +38,10 @@ public class ReportController {
         return ResponseEntity.ok(reports);
     }
 
-    @GetMapping("/findByTypeOfReportId/{typeOfReportId}")
-    public ResponseEntity<List<Report>> getReportsByTypeOfReportId(@PathVariable("typeOfReportId") Integer typeOfReportId) {
-        List<Report> reports = reportService.findReportsByTypeOfReportId(typeOfReportId);
-        return ResponseEntity.ok(reports);
+    @GetMapping("/findByReportId/{reportId}")
+    public ResponseEntity<LabelDTO> getLabelsByReportId(@PathVariable("reportId") Integer reportId) {
+        LabelDTO label = reportService.findLabelByReportId(reportId);
+        return ResponseEntity.ok(label);
     }
 
     @GetMapping("/findById/{id}")

@@ -11,9 +11,9 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "type_of_report_id")
-    private TypeOfReport typeOfReport;
+    @OneToOne
+    @JoinColumn(name = "label_id")
+    private Label label;
 
     private String reason;
 
@@ -33,15 +33,17 @@ public class Report {
     private User reportUser;
 
     // this is the id we are reporting (it could be pcmsg_id or user_id)
-    private Integer reportedId;
+    // front-end logic: if report post/comment store 'p1' 'p2' as reportedId
+    // if report user: store 'u1' 'u2' as reportedId
+    private String reportedId;
 
     // Constructors, getters and setters
 
     public Report() {
     }
 
-    public Report(TypeOfReport typeOfReport, String reason, ReportStatus status, LocalDateTime reportDate, LocalDateTime caseCloseDate,String remarks, User user, Integer reportedId) {
-        this.typeOfReport = typeOfReport;
+    public Report( Label label, String reason, ReportStatus status, LocalDateTime reportDate, LocalDateTime caseCloseDate,String remarks, User user, String reportedId) {
+        this.label = label;
         this.reason = reason;
         this.status = status;
         this.reportDate = reportDate;
@@ -57,14 +59,6 @@ public class Report {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public TypeOfReport getTypeOfReport() {
-        return typeOfReport;
-    }
-
-    public void setTypeOfReport(TypeOfReport typeOfReport) {
-        this.typeOfReport = typeOfReport;
     }
 
     public String getReason() {
@@ -103,17 +97,25 @@ public class Report {
         this.remarks = remarks;
     }
 
-    public User getUser() {
+    public Label getLabel() {
+        return label;
+    }
+
+    public void setLabel(Label label) {
+        this.label = label;
+    }
+
+    public User getReportUser() {
         return reportUser;
     }
 
-    public void setUser(User user) {
+    public void setReportUser(User user) {
         this.reportUser = user;
     }
 
-    public Integer getReportedId() {
+    public String getReportedId() {
         return reportedId;
     }
 
-    public void setReportedId(Integer reportedId) {this.reportedId = reportedId;}
+    public void setReportedId(String reportedId) {this.reportedId = reportedId;}
 }
