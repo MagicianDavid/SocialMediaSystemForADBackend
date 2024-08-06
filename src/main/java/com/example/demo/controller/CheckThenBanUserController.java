@@ -79,10 +79,10 @@ public class CheckThenBanUserController {
     				// status also will not change since this user is not banned,
     				// it will remain as "active"
     				// simply notify this user when his/her authorization has been updated
-    				String notifMsg = "System-Auto-Generated-Notification\n"
-							+"--Your Authorization has been updated--";
+					String notifTitle = "System-Auto-Generated-Notification";
+    				String notifMsg = "--Your Authorization has been updated--";
 					LocalDateTime notifDateTime = LocalDateTime.now();
-					Notification systemGeneratedNotif = new Notification(curUser,notifMsg,notifDateTime, NotificationStatus.Unread);
+					Notification systemGeneratedNotif = new Notification(curUser,notifTitle,notifMsg,notifDateTime, NotificationStatus.Unread);
 					notificationService.saveNotification(systemGeneratedNotif);
     			}
     		}

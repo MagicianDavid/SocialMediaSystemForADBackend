@@ -42,11 +42,7 @@ public interface PCMsgRepository extends JpaRepository<PCMsg,Integer> {
     // For top 5 posts
     @Query("SELECT p FROM PCMsg p WHERE p.sourceId IS NULL ORDER BY p.timeStamp DESC")
     List<PCMsg> findTop5BySourceIdIsNullOrderByTimeStampDesc();
-    
-    // for pagination
-    @Query("SELECT p FROM PCMsg p WHERE p.sourceId IS NULL ORDER BY p.timeStamp DESC ")
-    Page<PCMsg> findAllPostsOnly(Pageable pageable);
-    
+
     //Remove Deleted Post
 //	@Query("SELECT p FROM PCMsg p WHERE p.sourceId IS NULL and p.status != 'delete' ORDER BY p.timeStamp DESC ")
 //	List<PCMsg> findAllPostsOnlyNotDeleted();
@@ -60,8 +56,22 @@ public interface PCMsgRepository extends JpaRepository<PCMsg,Integer> {
             @Param("blockedUserIds") List<Integer> blockedUserIds,
             @Param("userId") int userId);
 
-    
-  
-    
+    // for pagination
+    @Query("SELECT p FROM PCMsg p WHERE p.sourceId IS NULL ORDER BY p.timeStamp DESC ")
+    Page<PCMsg> findAllPostsOnly(Pageable pageable);
 
+    @Query("SELECT p FROM PCMsg p WHERE p.sourceId IS NULL AND p.user.id = :userId ORDER BY p.timeStamp DESC ")
+    Page<PCMsg> findAllPostsByUserIdByDateDesc(@Param("userId") int userId,Pageable pageable);
+
+    @Query("Select p From PCMsg p WHERE p.sourceId IS NULL AND (p.content like CONCAT('%',:k,'%') OR p.user.username like CONCAT('%',:k,'%')) ORDER BY p.timeStamp DESC")
+    Page<PCMsg> SearchPostsByContentAndUserNameOrderByDateDesc(@Param("k") String keyword,Pageable pageable);
+
+    @Query("SELECT p FROM PCMsg p WHERE p.sourceId IS NULL AND p.status != 'delete' "
+            + "AND (p.user.id IN :followingUserIds OR p.user.id = :userId) "
+            + "AND p.user.id NOT IN :blockedUserIds "
+            + "ORDER BY p.timeStamp DESC")
+    Page<PCMsg> findAllFollowingPostsAndNotDeletedByUserId(
+            @Param("followingUserIds") List<Integer> followingUserIds,
+            @Param("blockedUserIds") List<Integer> blockedUserIds,
+            @Param("userId") int userId,Pageable pageable);
 }
