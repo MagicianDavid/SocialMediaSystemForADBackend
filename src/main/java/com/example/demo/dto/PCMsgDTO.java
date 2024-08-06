@@ -9,8 +9,7 @@ public class PCMsgDTO {
 	// can add more information if required
     private Integer id;
     private String content;
-	private String userName;
-	private Integer userId;
+	private UserDTOForPCMsg user;
 	private Integer sourceId;
 	private String timeStamp;
 	private String status;
@@ -21,8 +20,7 @@ public class PCMsgDTO {
     public PCMsgDTO(PCMsg pcmsg) {
         this.id = pcmsg.getId();
         this.content = pcmsg.getContent();
-		this.userId = pcmsg.getUser().getId();
-		this.userName = pcmsg.getUser().getName();
+		this.user = new UserDTOForPCMsg(pcmsg.getUser());
 		this.status = pcmsg.getStatus();
 		this.tag = pcmsg.getTag();
 		this.sourceId = pcmsg.getSourceId();
@@ -45,20 +43,12 @@ public class PCMsgDTO {
 		this.content = content;
 	}
 
-	public String getUserName() {
-		return userName;
+	public UserDTOForPCMsg getUser() {
+		return user;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
-	public Integer getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Integer userId) {
-		this.userId = userId;
+	public void setUser(UserDTOForPCMsg user) {
+		this.user = user;
 	}
 
 	public Integer getSourceId() {
