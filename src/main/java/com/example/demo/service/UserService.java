@@ -134,6 +134,8 @@ public class UserService implements UserInterface {
 		user.setSocialScore(120);
 		// set the default status to 'active'
 		user.setStatus(UserStatus.active);
+		user.setCountry("Singapore");
+		user.setGender("Male");
 		return userRepository.save(user);
 	}
 

@@ -48,8 +48,7 @@ public class PCMsgService implements PCMsgInterface{
 	
 	@Autowired
     private FollowListRepository followListRepository;
-	
-	
+
 	private void changePCMsgStatusById(Integer id, String operation) {
 		try {
 			PCMsg curPCMsg = findPCMsgById(id);
@@ -69,7 +68,6 @@ public class PCMsgService implements PCMsgInterface{
 	public Integer CountComments() {
 		return pcmsgRepository.countComments();
 	}
-
 	
 	//get tags count
 	public Map<String, Integer> getTagCounts() {
@@ -103,8 +101,6 @@ public class PCMsgService implements PCMsgInterface{
         
         return tagCounts;
     }
-	
-	
 	
 	// count all Comments
 	private int countCommentsRecursively(Integer pcmsgId) {
