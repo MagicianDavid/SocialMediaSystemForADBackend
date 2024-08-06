@@ -217,7 +217,7 @@ public class UserService implements UserInterface {
 	public void incrementAllUserSocialScores() {
         List<User> users = userRepository.findAll();
         for (User user : users) {
-            user.setSocialScore(user.getSocialScore() + 1);
+        	user.setSocialScore(Math.min(user.getSocialScore() + 1, 120));
         }
         userRepository.saveAll(users);
     }
