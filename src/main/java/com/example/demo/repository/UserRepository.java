@@ -2,6 +2,8 @@ package com.example.demo.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,9 +22,15 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	
 	@Query("Select u from User as u where u.username like CONCAT('%',:k,'%') ")
 	List<User> findAllByUserName(@Param("k") String keyword);
+
+	@Query("Select u from User as u where u.username like CONCAT('%',:k,'%') ")
+	Page<User> findAllByUserName(@Param("k") String keyword, Pageable pageable);
 	
 	@Query("SELECT u FROM User u JOIN u.followings f WHERE f.followingUser.username LIKE CONCAT('%', :k, '%')")
 	List<User> findAllFollowingByUserName(@Param("k") String keyword);
+
+	@Query("SELECT u FROM User u JOIN u.followings f WHERE f.followingUser.username LIKE CONCAT('%', :k, '%')")
+	Page<User> findAllFollowingByUserName(@Param("k") String keyword, Pageable pageable);
 
 	@Query("Select u from User u where u.role.type = :role ")
 	List<User> findhByJobRole(@Param("role") String role);

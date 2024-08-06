@@ -6,8 +6,11 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,92 +38,106 @@ import com.example.demo.service.TaggingService;
 @RequestMapping("/api/pcmsgs")
 public class PCMsgController {
 
-	@Autowired
-	private PCMsgInterface pcmsgService;
-	
+    @Autowired
+    private PCMsgInterface pcmsgService;
+
     @Autowired
     private TagInterface tagService;
-    
-	@Autowired
+
+    @Autowired
     private TaggingService taggingService;
-	
-	@Autowired
-	@Qualifier("pagedResourcesAssembler")
+
+    @Autowired
+    @Qualifier("pagedResourcesAssembler")
     private PagedResourcesAssembler<PCMsgDTO> pagedResourcesAssembler;
-    
-	// get tags count
-	 @GetMapping("/tag-counts")
-	 public Map<String, Integer> getTagCounts() {
-	    return pcmsgService.getTagCounts();
-	 }
-	
-	// return all posts 
-	@GetMapping("/findAllPosts")
+
+    // get tags count
+    @GetMapping("/tag-counts")
+    public Map<String, Integer> getTagCounts() {
+        return pcmsgService.getTagCounts();
+    }
+
+    // return all posts
+    @GetMapping("/findAllPosts")
     public ResponseEntity<List<PCMsg>> getAllPosts() {
         List<PCMsg> postList = pcmsgService.findAllPosts();
         return ResponseEntity.ok(postList);
     }
-	
-	// for pagination
-	@GetMapping("/findAllPostsPageable")
-    public org.springframework.hateoas.PagedModel<EntityModel<PCMsgDTO>> getAllPosts(@RequestParam(value = "page", defaultValue = "0") int page,
-                                   @RequestParam(value = "size", defaultValue = "10") int size) {
-		Page<PCMsgDTO> pcmsgPage = pcmsgService.findAllPosts(page, size);
-        return pagedResourcesAssembler.toModel(pcmsgPage);
-    }
-	
-	// return all posts order by like & comments
-	@GetMapping("/findHotPosts")
+
+    // return all posts order by like & comments
+    @GetMapping("/findHotPosts")
     public ResponseEntity<List<PCMsg>> getHotPosts() {
         List<PCMsg> postList = pcmsgService.findAllHotPosts();
         return ResponseEntity.ok(postList);
     }
-	
-	// this is for the search result page, it will return three lists
-	// 1st is the all_matched_following_user_list
-	// 2nd is the all_matched_user_list
-	// 3rd is the all_matched_post_list(post_user or post content)
-	@GetMapping("/searchBarResult/")
+
+    // this is for the search result page, it will return three lists
+    // 1st is the all_matched_following_user_list
+    // 2nd is the all_matched_user_list
+    // 3rd is the all_matched_post_list(post_user or post content)
+    // TODO: Pagination version hasn't implemented yet
+    @GetMapping("/searchBarResult/")
     public ResponseEntity<SearchResult> getSearchBarResult(@RequestParam("keyword") String k) {
         List<User> all_matched_following_user_list = pcmsgService.findAllSearchFollowingUser(k);
         List<User> all_matched_user_list = pcmsgService.findAllSearchUser(k);
         List<PCMsg> all_matched_post_list = pcmsgService.findAllSearchPostsOrderByDateDESC(k);
-        
-        SearchResult searchResult = new SearchResult(all_matched_following_user_list,all_matched_user_list,all_matched_post_list);
+
+        SearchResult searchResult = new SearchResult(all_matched_following_user_list, all_matched_user_list, all_matched_post_list);
         return ResponseEntity.ok(searchResult);
     }
-		
-	// find by UserId, it is for user that log in platform.
-	@GetMapping("/findAllPostsByUserId/{id}")
+
+    // find by UserId, it is for user that log in platform.
+    @GetMapping("/findAllPostsByUserId/{id}")
     public ResponseEntity<List<PCMsg>> getAllPostsByUserId(@PathVariable("id") Integer id) {
         List<PCMsg> postList = pcmsgService.findAllPostsByUserId(id);
         return ResponseEntity.ok(postList);
     }
-	
-	// find all posts for this users' following and exclude blockList -Haven't Used
-	@GetMapping("/findAllFollowingPostsByUserId/{id}")
+
+    // find all posts for this users' following and exclude blockList -Haven't Used
+    @GetMapping("/findAllFollowingPostsByUserId/{id}")
     public ResponseEntity<List<PCMsg>> getAllFollowingPostsByUserId(@PathVariable("id") Integer id) {
-		//List<PCMsg> postList = pcmsgService.findAllFollowingPostsByUserId(id);
-		List<PCMsg> postList = pcmsgService.findAllPostsByUserId(id);
+        //List<PCMsg> postList = pcmsgService.findAllFollowingPostsByUserId(id);
+        List<PCMsg> postList = pcmsgService.findAllPostsByUserId(id);
 
         return ResponseEntity.ok(postList);
     }
-	
-	// find all posts for this users'following, !blockList, his own post
-	@GetMapping("/findAllFollowingPostsAndNotDeletedByUserId/{id}")
+
+    // find all posts for this users'following, !blockList, his own post
+    @GetMapping("/findAllFollowingPostsAndNotDeletedByUserId/{id}")
     public ResponseEntity<List<PCMsg>> findAllFollowingPostsAndNotDeletedByUserId(@PathVariable("id") Integer id) {
-		//List<PCMsg> postList = pcmsgService.findAllFollowingPostsByUserId(id);
-		List<PCMsg> postList = pcmsgService.findAllFollowingPostsAndNotDeletedByUserId(id);
+        //List<PCMsg> postList = pcmsgService.findAllFollowingPostsByUserId(id);
+        List<PCMsg> postList = pcmsgService.findAllFollowingPostsAndNotDeletedByUserId(id);
 
         return ResponseEntity.ok(postList);
     }
-	
-	
-	
-	@GetMapping("/findPostDetailById/{id}")
+
+    @GetMapping("/findPostDetailById/{id}")
     public ResponseEntity<PCMsgDetail> getPostById(@PathVariable("id") Integer id) {
-		PCMsgDetail post = pcmsgService.findPCMsgDetailById(id);
+        PCMsgDetail post = pcmsgService.findPCMsgDetailById(id);
         return ResponseEntity.ok(post);
+    }
+
+    // for pagination
+    @GetMapping("/findAllPostsPageable")
+    public PagedModel<EntityModel<PCMsgDTO>> getAllPosts(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                         @RequestParam(value = "size", defaultValue = "10") int size) {
+        Page<PCMsgDTO> pcmsgPage = pcmsgService.findAllPosts(page, size);
+        return pagedResourcesAssembler.toModel(pcmsgPage);
+    }
+
+    @GetMapping("/findAllPostsByUserIdPageable/{id}")
+    public PagedModel<EntityModel<PCMsgDTO>> getAllPostsByUserId(@PathVariable("id") Integer id, @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                 @RequestParam(value = "size", defaultValue = "10") int size) {
+        Page<PCMsgDTO> postList = pcmsgService.findAllPostsByUserId(id, page, size);
+        return pagedResourcesAssembler.toModel(postList);
+    }
+
+    @GetMapping("/findAllFollowingPostsAndNotDeletedByUserIdPageable/{id}")
+    public PagedModel<EntityModel<PCMsgDTO>> findAllFollowingPostsAndNotDeletedByUserId(@PathVariable("id") Integer id,
+                                                                                        @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                                        @RequestParam(value = "size", defaultValue = "10") int size) {
+        Page<PCMsgDTO> postList = pcmsgService.findAllFollowingPostsAndNotDeletedByUserId(id, page, size);
+        return pagedResourcesAssembler.toModel(postList);
     }
 	
     @GetMapping("/{id}/children")
@@ -160,7 +177,7 @@ public class PCMsgController {
         tag.setPCMsg(post);
         post.setTag(tag);
 
-        PCMsg newPost = pcmsgService.savePCMsgt(post);
+        PCMsg newPost = pcmsgService.savePCMsg(post);
         return ResponseEntity.status(HttpStatus.CREATED).body(newPost);
     }
 	
@@ -175,7 +192,7 @@ public class PCMsgController {
         tag.setPCMsg(comment);
         comment.setTag(tag);
 	
-		PCMsg newComment = pcmsgService.savePCMsgt(comment);
+		PCMsg newComment = pcmsgService.savePCMsg(comment);
         return ResponseEntity.status(HttpStatus.CREATED).body(newComment);
     }
 	

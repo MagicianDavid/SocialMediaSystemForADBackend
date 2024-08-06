@@ -3,6 +3,7 @@ package com.example.demo.interfacemethods;
 import java.util.List;
 import java.util.Map;
 
+import com.example.demo.dto.UserDTO;
 import org.springframework.data.domain.Page;
 
 import com.example.demo.model.PCMsg;
@@ -20,12 +21,8 @@ public interface PCMsgInterface {
 	List<PCMsg> findTop5Posts();
 	// return whatever posts in our database
 	List<PCMsg> findAllPosts();
-	Page<PCMsgDTO> findAllPosts(Integer page, Integer size);
 	// return all posts of the specific user with userId
 	List<PCMsg> findAllPostsByUserId(Integer userId);
-	// return this user's following users' posts
-	List<PCMsg> findAllFollowingPostsByUserId(Integer userId);
-
 	// return all FollowingPost, Not Deleted, Include own Post
 	List<PCMsg> findAllFollowingPostsAndNotDeletedByUserId(Integer userId);
 	// return hot posts in our database
@@ -58,8 +55,17 @@ public interface PCMsgInterface {
 	// Return If User like the post
 	boolean hasUserLikedPost(int userId, int postId);
 
+	// Pagination
+	Page<PCMsgDTO> findAllPosts(Integer page, Integer size);
+	Page<PCMsgDTO> findAllPostsByUserId(Integer userId,Integer page, Integer size);
+	Page<PCMsgDTO> findAllFollowingPostsAndNotDeletedByUserId(Integer userId,Integer page, Integer size);
+	// TODO: for User pagination, these 3 below is for the search bar result page, it is triggered by click of 'show more' button
+	Page<UserDTO> findAllSearchFollowingUser(String keyword, Integer page, Integer size);
+	Page<UserDTO> findAllSearchUser(String keyword, Integer page, Integer size);
+	Page<PCMsgDTO> findAllSearchPostsOrderByDateDESC(String keyword,Integer page, Integer size);
+
 	// CRUD
-	PCMsg savePCMsgt (PCMsg pcmsg);
+	PCMsg savePCMsg (PCMsg pcmsg);
 	PCMsg updatePCMsg (Integer id, PCMsg pcmsg);
 	void updatePCMsgStatusById(Integer id,String status);
 	void showPCMsgById(Integer id);

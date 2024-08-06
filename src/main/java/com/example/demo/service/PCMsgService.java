@@ -1,11 +1,12 @@
 package com.example.demo.service;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.example.demo.dto.UserDTO;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,7 +19,6 @@ import com.example.demo.dto.PCMsgDTO;
 import com.example.demo.dto.PCMsgDetail;
 import com.example.demo.interfacemethods.PCMsgInterface;
 import com.example.demo.model.PCMsg;
-import com.example.demo.model.Tag;
 import com.example.demo.model.User;
 import com.example.demo.model.FollowList;
 import com.example.demo.model.Label;
@@ -137,6 +137,18 @@ public class PCMsgService implements PCMsgInterface{
 			changePCMsgStatusById(id,operation);
 		}
 	}
+
+	private Pageable toPageable(Integer page, Integer size) {
+		return PageRequest.of(page, size);
+	}
+
+	// transfer Page<PCMsg> to Page<PCMsgDTO>
+	private Page<PCMsgDTO> transformToPCMsgDTOPage(Page<PCMsg> pcmsgPage, Pageable pageable) {
+		List<PCMsgDTO> pcmsgDTOs = pcmsgPage.stream()
+				.map(PCMsgDTO::new)
+				.collect(Collectors.toList());
+		return new PageImpl<>(pcmsgDTOs, pageable, pcmsgPage.getTotalElements());
+	}
 	
 	@Override
 	public List<PCMsg> findAllPosts() {
@@ -149,18 +161,7 @@ public class PCMsgService implements PCMsgInterface{
 		//i edited this, previous it is return comment too.
 		return pcmsgRepository.findTop5BySourceIdIsNullOrderByTimeStampDesc();
 	}
-	
-	// Pagination version of finAllPosts
-	@Override
-    public Page<PCMsgDTO> findAllPosts(Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<PCMsg> pcmsgPage = pcmsgRepository.findAllPostsOnly(pageable);
-        List<PCMsgDTO> pcmsgDTOs = pcmsgPage.stream()
-                .map(PCMsgDTO::new)
-                .collect(Collectors.toList());
-        return new PageImpl<>(pcmsgDTOs, pageable, pcmsgPage.getTotalElements());
-    }
-	
+
 	@Override
 	public List<PCMsg> findAllPCMsgDateDESC() {
 		return pcmsgRepository.findAllPCMsgsOrderByDateDesc();
@@ -169,29 +170,6 @@ public class PCMsgService implements PCMsgInterface{
 	@Override
 	public List<PCMsg> findAllPostsByUserId(Integer userId) {
 		return pcmsgRepository.findAllPostsByUserIdByDateDesc(userId);
-	}
-	
-	@Override
-	public List<PCMsg> findAllFollowingPostsByUserId(Integer userId) {
-		User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with ID:" + userId));
-		
-		List<FollowList> followings = user.getFollowings();
-		
-		//String blockList = user.getBlockList();
-    	List<Integer> blockedUserIds = user.getBlockedUserIds();
-
-	
-        List<Integer> followingUserIds = followings.stream()
-                .map(FollowList -> FollowList.getFollowedUser().getId())
-                .collect(Collectors.toList());
-
-//        List<Integer> blockedUserIds = Arrays.stream(blockList.split(","))
-//                .filter(blockId -> !blockId.trim().isEmpty())
-//                .map(Integer::parseInt)
-//                .collect(Collectors.toList());
-
-        return pcmsgRepository.findAllFollowingPostsByUserId(followingUserIds, blockedUserIds);
 	}
 	
 	@Override
@@ -205,11 +183,6 @@ public class PCMsgService implements PCMsgInterface{
         List<Integer> followingUserIds = followings.stream()
                 .map(FollowList -> FollowList.getFollowedUser().getId())
                 .collect(Collectors.toList());
-
-//        List<Integer> blockedUserIds = Arrays.stream(blockList.split(","))
-//                .filter(blockId -> !blockId.trim().isEmpty()) 
-//                .map(Integer::parseInt)
-//                .collect(Collectors.toList());
         
         return pcmsgRepository.findAllFollowingPostsAndNotDeletedByUserId(followingUserIds, blockedUserIds, userId);
 	}
@@ -230,12 +203,10 @@ public class PCMsgService implements PCMsgInterface{
         }
 
         // Sort posts by popularity score in descending order
-        List<PCMsg> sortedPosts = postPopularityMap.entrySet().stream()
-                .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
-
-        return sortedPosts;
+        return postPopularityMap.entrySet().stream()
+				.sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toList());
 	}
 	
 	@Override
@@ -266,6 +237,65 @@ public class PCMsgService implements PCMsgInterface{
 		// make sure this post/comment exists
 		findPCMsgById(fatherId);
 		return pcmsgRepository.findAllFirstLayerChildren(fatherId);
+	}
+
+	// Pagination version of finAllPosts
+	@Override
+	public Page<PCMsgDTO> findAllPosts(Integer page, Integer size) {
+		Pageable pageable = toPageable(page, size);
+		Page<PCMsg> pcmsgPage = pcmsgRepository.findAllPostsOnly(pageable);
+		return transformToPCMsgDTOPage(pcmsgPage, pageable);
+	}
+
+	@Override
+	public Page<PCMsgDTO> findAllPostsByUserId(Integer userId, Integer page, Integer size) {
+		Pageable pageable = toPageable(page, size);
+		Page<PCMsg> pcmsgPage = pcmsgRepository.findAllPostsByUserIdByDateDesc(userId, pageable);
+		return transformToPCMsgDTOPage(pcmsgPage, pageable);
+	}
+
+	@Override
+	public Page<PCMsgDTO> findAllFollowingPostsAndNotDeletedByUserId(Integer userId, Integer page, Integer size) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new RuntimeException("User not found with ID:" + userId));
+		List<FollowList> followings = user.getFollowings();
+		List<Integer> blockedUserIds = user.getBlockedUserIds();
+		List<Integer> followingUserIds = followings.stream()
+				.map(FollowList -> FollowList.getFollowedUser().getId())
+				.collect(Collectors.toList());
+		Pageable pageable = toPageable(page, size);
+		Page<PCMsg> pcmsgPage = pcmsgRepository.findAllFollowingPostsAndNotDeletedByUserId(followingUserIds, blockedUserIds, userId, pageable);
+		return transformToPCMsgDTOPage(pcmsgPage, pageable);
+	}
+
+	@Override
+	public Page<UserDTO> findAllSearchFollowingUser(String keyword, Integer page, Integer size) {
+		Pageable pageable = toPageable(page, size);
+		Page<User> userPage = userRepository.findAllFollowingByUserName(keyword, pageable);
+		List<UserDTO> userDTOs = userPage.stream()
+				.map(UserDTO::new)
+				.collect(Collectors.toList());
+		return new PageImpl<>(userDTOs, pageable, userPage.getTotalElements());
+	}
+
+	@Override
+	public Page<UserDTO> findAllSearchUser(String keyword, Integer page, Integer size) {
+		Pageable pageable = toPageable(page, size);
+		Page<User> userPage = userRepository.findAllByUserName(keyword, pageable);
+		List<UserDTO> userDTOs = userPage.stream()
+				.map(UserDTO::new)
+				.collect(Collectors.toList());
+		return new PageImpl<>(userDTOs, pageable, userPage.getTotalElements());
+	}
+
+	@Override
+	public Page<PCMsgDTO> findAllSearchPostsOrderByDateDESC(String keyword, Integer page, Integer size) {
+		if (keyword.isBlank() || keyword.isEmpty()) {
+			throw new RuntimeException("Cannot enter empty string!");
+		}
+		Pageable pageable = toPageable(page, size);
+		Page<PCMsg> pcmsgPage = pcmsgRepository.SearchPostsByContentAndUserNameOrderByDateDesc(keyword, pageable);
+		return transformToPCMsgDTOPage(pcmsgPage, pageable);
 	}
 
 	@Override
@@ -349,7 +379,7 @@ public class PCMsgService implements PCMsgInterface{
 	
 	@Override
 	@Transactional(readOnly = false)
-	public PCMsg savePCMsgt(PCMsg pcmsg) {
+	public PCMsg savePCMsg(PCMsg pcmsg) {
 		if (pcmsg.getTag().getTag() != null) {
 			penalizeUserBasedOnTags(pcmsg);
 		}

@@ -24,7 +24,10 @@ public class Notification {
 	@ManyToOne
 	@JoinColumn(name = "Banned User id")
 	private User notificationUser;
-	
+
+	@Column (name = "Title", length = 255)
+	private String title;
+
 	@Column (name = "Message", length = 255)
 	private String message;
 	
@@ -37,8 +40,9 @@ public class Notification {
 	
 	
 	public Notification () {}
-	public Notification (User notificationUser, String message, LocalDateTime notificationTime, NotificationStatus notificationStatus) {
+	public Notification (User notificationUser, String title, String message, LocalDateTime notificationTime, NotificationStatus notificationStatus) {
 		this.notificationUser = notificationUser;
+		this.title = title;
 		this.message = message;
 		this.notificationTime = notificationTime;
 		this.notificationStatus = notificationStatus;
@@ -60,6 +64,15 @@ public class Notification {
 	public void setNotificationUser(User notificationUser) {
 		this.notificationUser = notificationUser;
 	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
 	public String getMessage() {
 		return message;
 	}
