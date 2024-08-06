@@ -214,6 +214,16 @@ public class UserService implements UserInterface {
 	
 	@Override
 	@Transactional(readOnly = false)
+	public void incrementAllUserSocialScores() {
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            user.setSocialScore(user.getSocialScore() + 1);
+        }
+        userRepository.saveAll(users);
+    }
+	
+	@Override
+	@Transactional(readOnly = false)
 	public void blockUserById(Integer userId, Integer blockUserId) {
 
 		// Can not block him/herself
