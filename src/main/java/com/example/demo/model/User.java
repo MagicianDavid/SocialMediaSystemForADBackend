@@ -77,6 +77,7 @@ public class User {
 	private Auth auth;
 	
 	@OneToMany(mappedBy = "reportUser", cascade = CascadeType.ALL)
+	@JsonIgnore
 	private List<Report> reports;
 
 	// ----------XT-----------------

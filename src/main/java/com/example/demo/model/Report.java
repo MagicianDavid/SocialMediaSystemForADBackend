@@ -3,6 +3,8 @@ package com.example.demo.model;
 import java.time.LocalDateTime;
 
 import com.example.demo.statusEnum.ReportStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -11,7 +13,7 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "label_id")
     private Label label;
 
