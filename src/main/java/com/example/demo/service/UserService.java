@@ -294,15 +294,15 @@ public class UserService implements UserInterface {
 		// set socialScore 1-60 as a list for judgment
 		List<Integer> fistRandList = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 6));
 		// default set format of "FixedRankForSocialScore:1-60" "FixedRankForSocialScore:0"
-		Auth adjustAuth = authRepository.findByRank("FixedRankForSocialScore:" + ((curRank - 1) * 10 + 1) + "-" + curRank * 10 );
-		if (curRank == 0) {
+		Auth adjustAuth;
+		if (fistRandList.contains(curRank)) {
+			adjustAuth = authRepository.findByRank("FixedRankForSocialScore:1-60");
+		} else if (curRank == 0) {
 			// we should ban this user
 			// but here we just return the authorization
 			adjustAuth = authRepository.findByRank("FixedRankForSocialScore:0");
 		} else {
-			if (fistRandList.contains(curRank)) {
-				adjustAuth = authRepository.findByRank("FixedRankForSocialScore:1-60");
-			}
+			adjustAuth = authRepository.findByRank("FixedRankForSocialScore:" + ((curRank - 1) * 10 + 1) + "-" + curRank * 10);
 		}
 		curUser.setAuth(adjustAuth);
 		userRepository.save(curUser);

@@ -60,7 +60,6 @@ public class CheckThenBanUserController {
     		
     		// if Authorization has been updated then we do the notifications or email
     		if (!olderAuthId.equals(adjustAuth.getId())) {
-    			// then check the status whether should be updated
     			if (adjustAuth.getRank().equals("FixedRankForSocialScore:0")) {
     				
     				// currently we ban this user for a year, after one year his score & status & authorization will be reset

@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.example.demo.dto.LabelDTO;
+import com.example.demo.exception.DuplicateAuthException;
+import com.example.demo.exception.DuplicateReportException;
+import com.example.demo.model.Auth;
 import com.example.demo.model.Label;
 import com.example.demo.statusEnum.ReportStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +63,7 @@ public class ReportService implements ReportInterface {
     @Override
     @Transactional(readOnly = false)
     public Report saveReport(Report report) {
+        handleDuplicateReportException(report);
         return reportRepository.save(report);
     }
 
@@ -98,4 +102,11 @@ public class ReportService implements ReportInterface {
     public void deleteReportById(Integer id) {
         reportRepository.deleteById(id);
     }
+
+    private void handleDuplicateReportException(Report report) {
+        if (reportRepository.checkDuplicateReport(report.getReportUser().getId(),report.getReportedId())) {
+            throw new DuplicateReportException("Your report is still pending. please wait patiently");
+        }
+    }
+
 }

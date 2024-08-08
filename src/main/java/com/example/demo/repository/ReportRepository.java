@@ -21,4 +21,7 @@ public interface ReportRepository extends JpaRepository<Report, Integer> {
 	Integer countReport();
 	
     List<Report> findTop5ByOrderByReportDateDesc();
+
+    @Query("SELECT COUNT(r) > 0 FROM Report r WHERE r.reportUser.id = :userId AND r.reportedId = :reportedId AND r.status = 'Pending'")
+    Boolean checkDuplicateReport(Integer userId,String reportedId);
 }
