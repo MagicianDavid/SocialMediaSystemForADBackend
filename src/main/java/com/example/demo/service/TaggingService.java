@@ -36,7 +36,7 @@ public class TaggingService {
 	
 	 public String getTagsForText(String text) {
 	        RestTemplate restTemplate = new RestTemplate();
-	        String url = "http://127.0.0.1:5000/mlbpredict";
+	        String url = "http://127.0.0.1:5000/mlbpredict2";
 
 	     
 	        HttpHeaders headers = new HttpHeaders();

@@ -14,7 +14,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                .allowedOrigins("http://10.0.2.2:8080", "http://localhost:3000")
+                .allowedOrigins("http://10.0.2.2:8080", "http://localhost:3000","http://reactjsadprj.s3-website-us-east-1.amazonaws.com")
                 .allowedMethods("GET", "POST", "PUT", "DELETE");
             }
         };
