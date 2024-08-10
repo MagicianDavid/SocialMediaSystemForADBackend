@@ -66,8 +66,8 @@ public class ReportController {
         return ResponseEntity.ok(updatedReport);
     }
 
-    @PutMapping("/updateStatus/{id}/{status}")
-    public ResponseEntity<Report> updateReportStatus(@PathVariable("id") Integer id, @PathVariable("status") ReportStatus status) {
+    @PutMapping("/updateStatus/{id}")
+    public ResponseEntity<Report> updateReportStatus(@PathVariable("id") Integer id, @RequestParam("status") ReportStatus status) {
         Report updatedReport = reportService.updateReportStatusById(id, status);
         return ResponseEntity.ok(updatedReport);
     }

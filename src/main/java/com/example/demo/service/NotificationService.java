@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,6 +68,8 @@ public class NotificationService implements NotificationInterface {
 	@Override
 	@Transactional(readOnly = false)
 	public Notification saveNotification(Notification notification) {
+		notification.setNotificationStatus(NotificationStatus.Unread);
+		notification.setNotificationTime(LocalDateTime.now());
 		return notificationRepository.save(notification);
 	}
 

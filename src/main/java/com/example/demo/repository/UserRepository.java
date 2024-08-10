@@ -17,7 +17,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	@Query("SELECT COUNT(u) FROM User u WHERE u.role.id = 1")
 	Integer countUsers();
 	
-	@Query("Select u from User as u where u.name like CONCAT('%',:k,'%') ")
+	@Query("Select u from User as u where u.name like CONCAT('%',:k,'%') OR u.username like CONCAT('%',:k,'%') ")
 	List<User> findByName(@Param("k") String keyword);
 	
 	@Query("Select u from User as u where u.username like CONCAT('%',:k,'%') ")

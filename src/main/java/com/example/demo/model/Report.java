@@ -26,6 +26,7 @@ public class Report {
     @Column(name = "case_close_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime caseCloseDate;
 
+    @Column(columnDefinition = "TEXT")
     private String remarks;
 
     @ManyToOne

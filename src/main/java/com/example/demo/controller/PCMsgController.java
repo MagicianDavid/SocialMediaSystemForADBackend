@@ -76,7 +76,7 @@ public class PCMsgController {
     // 2nd is the all_matched_user_list
     // 3rd is the all_matched_post_list(post_user or post content)
     // TODO: Pagination version hasn't implemented yet
-    @GetMapping("/searchBarResult/")
+    @GetMapping("/searchBarResult")
     public ResponseEntity<SearchResult> getSearchBarResult(@RequestParam("keyword") String k) {
         List<User> all_matched_following_user_list = pcmsgService.findAllSearchFollowingUser(k);
         List<User> all_matched_user_list = pcmsgService.findAllSearchUser(k);
