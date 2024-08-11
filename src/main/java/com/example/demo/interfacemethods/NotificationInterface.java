@@ -3,6 +3,7 @@ package com.example.demo.interfacemethods;
 import java.util.List;
 
 import com.example.demo.model.Notification;
+import com.example.demo.model.User;
 
 public interface NotificationInterface {
 	
@@ -15,6 +16,7 @@ public interface NotificationInterface {
 	// CRUD
 	Notification saveNotification(Notification notification);
 	Notification updateNotificationById(Integer id, Notification newNotification);
+	void sendNotificationToAllModerators(User moderator);
 	void updateNotificationStatusById(Integer id);
 	void deleteNotificationById(Integer id);
 }

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.demo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,6 +72,16 @@ public class NotificationService implements NotificationInterface {
 		notification.setNotificationStatus(NotificationStatus.Unread);
 		notification.setNotificationTime(LocalDateTime.now());
 		return notificationRepository.save(notification);
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public void sendNotificationToAllModerators(User moderator) {
+		String title = "Reminder of user report";
+		String message = "our user has just reported, please take notice!";
+		LocalDateTime dateTime = LocalDateTime.now();
+		Notification notification = new Notification(moderator,title,message,dateTime,NotificationStatus.Unread);
+		notificationRepository.save(notification);
 	}
 
 	@Override

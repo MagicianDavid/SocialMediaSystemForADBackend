@@ -3,7 +3,9 @@ package com.example.demo.controller;
 import com.example.demo.model.Notification;
 import com.example.demo.dto.EmailRequest;
 import com.example.demo.interfacemethods.NotificationInterface;
+import com.example.demo.model.User;
 import com.example.demo.service.EmailService;
+import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,9 @@ public class NotificationController {
     
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private UserService userService;
 
     @PostMapping("/sendEmail")
     public ResponseEntity<?> sendEmail(@RequestBody EmailRequest emailRequest) {
@@ -64,6 +69,14 @@ public class NotificationController {
     @PostMapping("/create")
     public Notification saveNotification(@RequestBody Notification notification) {
         return notificationService.saveNotification(notification);
+    }
+
+    @PostMapping("/sendToAllModerators")
+    public void sendNotificationToAllModerators() {
+        List<User> moderators = userService.findUsersByRole("Moderator");
+        for (User moderator : moderators) {
+            notificationService.sendNotificationToAllModerators(moderator);
+        }
     }
 
     @PutMapping("/update/{id}")
