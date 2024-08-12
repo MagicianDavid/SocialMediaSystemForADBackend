@@ -11,7 +11,7 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "label_id")
     private Label label;
 

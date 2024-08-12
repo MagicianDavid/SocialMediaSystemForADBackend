@@ -51,6 +51,8 @@ public interface PCMsgInterface {
 	Integer countTotalCommentsByPostId(Integer postId);
 	// Return Post & its first layer comments by postId
 	PCMsgDetail findPCMsgDetailById (Integer postId);
+	// Return Post by its commentId or comment-commentId
+	Integer findPostIdByCommentId (Integer commentId);
 	
 	// Return If User like the post
 	boolean hasUserLikedPost(int userId, int postId);

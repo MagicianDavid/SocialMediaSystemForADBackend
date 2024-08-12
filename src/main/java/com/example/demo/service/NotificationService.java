@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.demo.configuration.WebSocketNotificationHandler;
 import com.example.demo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,12 @@ public class NotificationService implements NotificationInterface {
 	
 	@Autowired
 	private NotificationRepository notificationRepository;
+
+	@Autowired
+	private WebSocketNotificationHandler webSocketNotificationHandler;
+
+	@Autowired
+	private UserService userService;
 	
 	@Override
 	public Notification findNotificationById(Integer id) {
@@ -71,17 +78,29 @@ public class NotificationService implements NotificationInterface {
 	public Notification saveNotification(Notification notification) {
 		notification.setNotificationStatus(NotificationStatus.Unread);
 		notification.setNotificationTime(LocalDateTime.now());
+		// activate WebSocket
+		webSocketNotificationHandler.sendNotificationUpdate(notification.getNotificationUser().getId());
 		return notificationRepository.save(notification);
 	}
 
 	@Override
 	@Transactional(readOnly = false)
-	public void sendNotificationToAllModerators(User moderator) {
-		String title = "Reminder of user report";
-		String message = "our user has just reported, please take notice!";
+	public void sendNotificationToAllModerators(String title, String message) {
+		// Default values
+		if (title == null || title.isEmpty()) {
+			title = "Reminder of user report";
+		}
+		if (message == null || message.isEmpty()) {
+			message = "Our user has just reported, please take notice!";
+		}
+
 		LocalDateTime dateTime = LocalDateTime.now();
-		Notification notification = new Notification(moderator,title,message,dateTime,NotificationStatus.Unread);
-		notificationRepository.save(notification);
+		List<User> moderators = userService.findUsersByRole("Moderator");
+		for (User moderator : moderators) {
+			Notification notification = new Notification(moderator, title, message, dateTime, NotificationStatus.Unread);
+			notificationRepository.save(notification);
+			webSocketNotificationHandler.sendNotificationUpdate(moderator.getId());
+		}
 	}
 
 	@Override
@@ -101,5 +120,4 @@ public class NotificationService implements NotificationInterface {
 	public void deleteNotificationById(Integer id) {
 		notificationRepository.deleteById(id);
 	}
-
 }

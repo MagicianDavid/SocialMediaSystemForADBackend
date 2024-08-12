@@ -151,6 +151,11 @@ public class UserService implements UserInterface {
 	}
 
 	@Override
+	public User findByUserName(String name) {
+		return userRepository.findByUserName(name);
+	}
+
+	@Override
 	public List<User> findUsersByRole(String role) {
 		return userRepository.findhByJobRole(role);
 	}

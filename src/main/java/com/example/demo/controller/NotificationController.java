@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/notifications")
@@ -72,11 +73,10 @@ public class NotificationController {
     }
 
     @PostMapping("/sendToAllModerators")
-    public void sendNotificationToAllModerators() {
-        List<User> moderators = userService.findUsersByRole("Moderator");
-        for (User moderator : moderators) {
-            notificationService.sendNotificationToAllModerators(moderator);
-        }
+    public void sendNotificationToAllModerators(@RequestBody Map<String, String> requestBody) {
+        String title = requestBody.getOrDefault("title", null);
+        String message = requestBody.getOrDefault("message", null);
+        notificationService.sendNotificationToAllModerators(title, message);
     }
 
     @PutMapping("/update/{id}")

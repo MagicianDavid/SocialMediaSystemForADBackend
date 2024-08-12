@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.example.demo.dto.UserDTO;
-import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -332,6 +332,30 @@ public class PCMsgService implements PCMsgInterface{
 		PCMsg findPost = findPCMsgById(postId);
 		List<PCMsg> findComments = findAllFirstLayerChildren(postId);
 		return new PCMsgDetail(findPost,findComments);
+	}
+
+	@Override
+	public Integer findPostIdByCommentId(Integer commentId) {
+		PCMsg comment = findPCMsgById(commentId);
+
+		// if is post
+		if (comment.getSourceId() == null) {
+			return comment.getId();
+		}
+
+		// if comment find sourceId
+		Integer parentCommentId = comment.getSourceId();
+		while (parentCommentId != null) {
+			PCMsg parentComment = findPCMsgById(parentCommentId);
+
+			if (parentComment.getSourceId() == null) {
+				return parentComment.getId();
+			}
+
+			parentCommentId = parentComment.getSourceId();
+		}
+
+		throw new EntityNotFoundException("PostId not found for the given commentId");
 	}
 	
 	@Override

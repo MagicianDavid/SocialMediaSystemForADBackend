@@ -117,6 +117,12 @@ public class PCMsgController {
         return ResponseEntity.ok(post);
     }
 
+    @GetMapping("/findPostIdByCommentId/{id}")
+    public ResponseEntity<Integer> getPostIdByCommentId(@PathVariable("id") Integer id) {
+        Integer postId = pcmsgService.findPostIdByCommentId(id);
+        return ResponseEntity.ok(postId);
+    }
+
     // for pagination
     @GetMapping("/findAllPostsPageable")
     public PagedModel<EntityModel<PCMsgDTO>> getAllPosts(@RequestParam(value = "page", defaultValue = "0") int page,

@@ -14,7 +14,8 @@ public interface UserInterface {
 	List<User> findAllUsers();
 	List<User> findUsersByName(String name);
 	List<User> findUsersByRole(String role);
-	User findUserById(Integer id);	
+	User findUserById(Integer id);
+	User findByUserName(String name);
 	
 	User saveUser(User user);
 	void updateUserStatusById(Integer id, UserStatus status);

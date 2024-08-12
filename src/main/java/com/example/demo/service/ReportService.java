@@ -2,13 +2,12 @@ package com.example.demo.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import com.example.demo.configuration.WebSocketReportHandler;
 import com.example.demo.dto.LabelDTO;
-import com.example.demo.exception.DuplicateAuthException;
 import com.example.demo.exception.DuplicateReportException;
-import com.example.demo.model.Auth;
 import com.example.demo.model.Label;
+import com.example.demo.model.User;
 import com.example.demo.statusEnum.ReportStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +22,12 @@ public class ReportService implements ReportInterface {
 
     @Autowired
     private ReportRepository reportRepository;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private WebSocketReportHandler webSocketReportHandler;
 
     @Override
 	public Integer CountReports() {
@@ -64,6 +69,7 @@ public class ReportService implements ReportInterface {
     @Transactional(readOnly = false)
     public Report saveReport(Report report) {
         handleDuplicateReportException(report);
+        webSocketReportHandler.sendReportUpdate(report.getReportUser().getId());
         return reportRepository.save(report);
     }
 
@@ -79,6 +85,7 @@ public class ReportService implements ReportInterface {
         existingReport.setRemarks(report.getRemarks());
         existingReport.setReportUser(report.getReportUser());
         existingReport.setReportedId(report.getReportedId());
+        webSocketReportHandler.sendReportUpdate(report.getReportUser().getId());
         return reportRepository.save(existingReport);
     }
 
@@ -104,7 +111,7 @@ public class ReportService implements ReportInterface {
     }
 
     private void handleDuplicateReportException(Report report) {
-        if (reportRepository.checkDuplicateReport(report.getReportUser().getId(),report.getReportedId())) {
+        if (reportRepository.checkDuplicateReport(report.getReportUser().getId(), report.getReportedId(), report.getLabel().getId())) {
             throw new DuplicateReportException("Your report is still pending. please wait patiently");
         }
     }

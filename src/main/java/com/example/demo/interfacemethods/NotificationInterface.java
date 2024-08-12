@@ -16,7 +16,7 @@ public interface NotificationInterface {
 	// CRUD
 	Notification saveNotification(Notification notification);
 	Notification updateNotificationById(Integer id, Notification newNotification);
-	void sendNotificationToAllModerators(User moderator);
+	void sendNotificationToAllModerators(String title, String message);
 	void updateNotificationStatusById(Integer id);
 	void deleteNotificationById(Integer id);
 }
