@@ -32,6 +32,32 @@ public class TaggingService {
         }
         return "No tags";
     }
+	 
+	 
+	 public String HugTagsForText(String text) {
+	        RestTemplate restTemplate = new RestTemplate();
+	        String url = "http://127.0.0.1:5000/mlbcheck";
+
+	     
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.add("Content-Type", "application/json");
+
+	        Map<String, String> request = new HashMap<>();
+	        request.put("text", text);
+
+	        HttpEntity<Map<String, String>> entity = new HttpEntity<>(request, headers);
+
+	        ResponseEntity<String> response = restTemplate.exchange(
+	        		url, HttpMethod.POST, entity, String.class);
+
+	        String responseBody = response.getBody();
+         if (responseBody != null && !responseBody.isEmpty()) {
+             return responseBody.toLowerCase();
+         } else {
+             return null;
+         }
+	    }
+	 
 	
 	
 	 public String getTagsForText(String text) {

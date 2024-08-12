@@ -177,15 +177,31 @@ public class PCMsgController {
  	// and the tag logic haven't done
     @PostMapping(value = "/createPost", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PCMsg> savePost(@RequestBody PCMsg post) {
-        String tags = taggingService.getTagsForText(post.getContent());
+    	String combinedTags;
+    	String tags = taggingService.spamCheck(post.getContent());
+    	System.out.println(tags);
+    	String tagsString = taggingService.HugTagsForText(post.getContent());
+
+    	if("spam".equals(tags)) {
+    		//send notifcation to inform user?
+    		
+    		//Use replaceAll to remove the trailing comma and space
+    	    combinedTags = tagsString != null ? String.join(",", tags, tagsString).replaceAll(",\\s*$", "") : tags;
+    		post.setStatus("delete");
+    	}else {
+        	combinedTags = tagsString;
+    	}
+    	
+    	//Use replaceAll to remove the trailing comma and space
         Tag tag = new Tag();
-        tag.setTag(tags);
+        tag.setTag(combinedTags);
         tag.setPCMsg(post);
         post.setTag(tag);
 
         PCMsg newPost = pcmsgService.savePCMsg(post);
         return ResponseEntity.status(HttpStatus.CREATED).body(newPost);
     }
+    
 	
     // TODO: comment sourceId should be its upper layer id 
     // and the tag logic haven't done
