@@ -179,7 +179,7 @@ public class PCMsgController {
     public ResponseEntity<PCMsg> savePost(@RequestBody PCMsg post) {
     	String combinedTags;
     	String tags = taggingService.spamCheck(post.getContent());
-    	System.out.println(tags);
+    	//System.out.println(tags);
     	String tagsString = taggingService.HugTagsForText(post.getContent());
 
     	if("spam".equals(tags)) {
@@ -207,10 +207,23 @@ public class PCMsgController {
     // and the tag logic haven't done
 	@PostMapping(value = "/createComment", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PCMsg> saveComment(@RequestBody PCMsg comment) {
-		
-	    String tags = taggingService.getTagsForText(comment.getContent());
+    	String combinedTags;
+    	String tags = taggingService.spamCheck(comment.getContent());
+    	String tagsString = taggingService.HugTagsForText(comment.getContent());
+    	
+    	if("spam".equals(tags)) {
+    		//send notifcation to inform user?
+    		
+    		//Use replaceAll to remove the trailing comma and space
+    	    combinedTags = tagsString != null ? String.join(",", tags, tagsString).replaceAll(",\\s*$", "") : tags;
+    	    comment.setStatus("delete");
+    	}else {
+        	combinedTags = tagsString;
+    	}
+    	
+    	
         Tag tag = new Tag();
-        tag.setTag(tags);
+        tag.setTag(combinedTags);
         tag.setPCMsg(comment);
         comment.setTag(tag);
 	
