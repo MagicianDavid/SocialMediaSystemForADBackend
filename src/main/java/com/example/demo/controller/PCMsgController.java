@@ -1,8 +1,12 @@
 package com.example.demo.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import com.example.demo.interfacemethods.LabelInterface;
+import com.example.demo.model.Label;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -43,6 +47,9 @@ public class PCMsgController {
 
     @Autowired
     private TagInterface tagService;
+
+    @Autowired
+    private LabelInterface labelService;
 
     @Autowired
     private TaggingService taggingService;
@@ -177,12 +184,7 @@ public class PCMsgController {
  	// and the tag logic haven't done
     @PostMapping(value = "/createPost", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PCMsg> savePost(@RequestBody PCMsg post) {
-        String tags = taggingService.getTagsForText(post.getContent());
-        Tag tag = new Tag();
-        tag.setTag(tags);
-        tag.setPCMsg(post);
-        post.setTag(tag);
-
+        processTagsAndLabels(post);
         PCMsg newPost = pcmsgService.savePCMsg(post);
         return ResponseEntity.status(HttpStatus.CREATED).body(newPost);
     }
@@ -191,13 +193,7 @@ public class PCMsgController {
     // and the tag logic haven't done
 	@PostMapping(value = "/createComment", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PCMsg> saveComment(@RequestBody PCMsg comment) {
-		
-	    String tags = taggingService.getTagsForText(comment.getContent());
-        Tag tag = new Tag();
-        tag.setTag(tags);
-        tag.setPCMsg(comment);
-        comment.setTag(tag);
-	
+        processTagsAndLabels(comment);
 		PCMsg newComment = pcmsgService.savePCMsg(comment);
         return ResponseEntity.status(HttpStatus.CREATED).body(newComment);
     }
@@ -257,5 +253,12 @@ public class PCMsgController {
         Tag updatedTag = tagService.updateReport(id, tagForm);
         return ResponseEntity.ok(updatedTag);
     }
-	
+
+    private void processTagsAndLabels(PCMsg pcmsg) {
+        String tags = taggingService.getTagsForText(pcmsg.getContent());
+        Tag tag = new Tag();
+        tag.setTag(tags);
+        tag.setPCMsg(pcmsg);
+        pcmsg.setTag(tag);
+    }
 }
