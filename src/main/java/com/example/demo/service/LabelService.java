@@ -9,7 +9,9 @@ import com.example.demo.model.Label;
 import com.example.demo.repository.LabelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +79,17 @@ public class LabelService implements LabelInterface {
         oldLabel.setColorCode(newLabel.getColorCode());
         return labelRepository.save(oldLabel);
     }
+    
+    @Override
+    public Map<String, String> getColorCodeByLabel() {
+        List<Label> labels = labelRepository.findAll();
+        Map<String, String> labelTable = new HashMap<>();
+        for (Label lbl : labels) {
+            labelTable.put(lbl.getLabel(), lbl.getColorCode());
+        }
+        return labelTable;
+    }
+    
 
     private void handleDuplicateLabelException(Label label) {
         if (labelRepository.checkDuplicateLabel(label.getLabel())) {

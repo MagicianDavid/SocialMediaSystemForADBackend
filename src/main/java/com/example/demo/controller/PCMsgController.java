@@ -1,17 +1,11 @@
 package com.example.demo.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
-import com.example.demo.interfacemethods.LabelInterface;
-import com.example.demo.model.Label;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
@@ -47,9 +41,6 @@ public class PCMsgController {
 
     @Autowired
     private TagInterface tagService;
-
-    @Autowired
-    private LabelInterface labelService;
 
     @Autowired
     private TaggingService taggingService;
@@ -255,9 +246,23 @@ public class PCMsgController {
     }
 
     private void processTagsAndLabels(PCMsg pcmsg) {
-        String tags = taggingService.getTagsForText(pcmsg.getContent());
+        String combinedTags;
+        String tags = taggingService.spamCheck(pcmsg.getContent());
+        String tagsString = taggingService.HugTagsForText(pcmsg.getContent());
+
+        if("spam".equals(tags)) {
+            //send notifcation to inform user?
+
+            //Use replaceAll to remove the trailing comma and space
+            combinedTags = tagsString != null ? String.join(",", tags, tagsString).replaceAll(",\\s*$", "") : tags;
+            pcmsg.setStatus("delete");
+        }else {
+            combinedTags = tagsString;
+        }
+
+
         Tag tag = new Tag();
-        tag.setTag(tags);
+        tag.setTag(combinedTags);
         tag.setPCMsg(pcmsg);
         pcmsg.setTag(tag);
     }

@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/label")
@@ -29,6 +30,12 @@ public class LabelController {
     @GetMapping("/findAllForReport")
     public ResponseEntity<List<LabelDTO>> getAllLabelDTOs() {
         List<LabelDTO> labels = labelService.findAllLabelsDTO();
+        return ResponseEntity.ok(labels);
+    }
+    
+    @GetMapping("/findColorCodeByLabel")
+    public ResponseEntity <Map<String, String>> getColorCodeByLabel() {
+    	Map<String, String> labels = labelService.getColorCodeByLabel();
         return ResponseEntity.ok(labels);
     }
 
@@ -77,6 +84,7 @@ public class LabelController {
         labelService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+    
 
     @ExceptionHandler(DuplicateAuthException.class)
     public ResponseEntity<String> handleDuplicateAuthException(DuplicateAuthException ex) {
