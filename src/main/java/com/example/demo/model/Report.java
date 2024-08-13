@@ -38,6 +38,8 @@ public class Report {
     // if report user: store 'u1' 'u2' as reportedId
     private String reportedId;
 
+    private Integer appealCount;
+
     // Constructors, getters and setters
 
     public Report() {
@@ -84,6 +86,14 @@ public class Report {
 
     public void setReportDate(LocalDateTime reportDate) {
         this.reportDate = reportDate;
+    }
+
+    public Integer getAppealCount() {
+        return appealCount;
+    }
+
+    public void setAppealCount(Integer appealCount) {
+        this.appealCount = appealCount;
     }
 
     public LocalDateTime getCaseCloseDate() {return caseCloseDate;}

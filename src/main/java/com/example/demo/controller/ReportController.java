@@ -66,6 +66,12 @@ public class ReportController {
         return ResponseEntity.ok(updatedReport);
     }
 
+    @PutMapping("/addUpAppealCount/{id}")
+    public ResponseEntity<Void> updateReport(@PathVariable("id") Integer id) {
+        reportService.addUpAppealCount(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PutMapping("/updateStatus/{id}")
     public ResponseEntity<Report> updateReportStatus(@PathVariable("id") Integer id, @RequestParam("status") ReportStatus status) {
         Report updatedReport = reportService.updateReportStatusById(id, status);

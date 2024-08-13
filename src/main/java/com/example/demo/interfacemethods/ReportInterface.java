@@ -21,5 +21,6 @@ public interface ReportInterface {
     Report updateReport(Integer id, Report report);
     Report updateReportStatusById(Integer id, ReportStatus status);
     Report caseCloseReport(Integer id);
+    void addUpAppealCount(Integer id);
     void deleteReportById(Integer id);
 }

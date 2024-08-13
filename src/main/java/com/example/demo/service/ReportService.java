@@ -83,6 +83,7 @@ public class ReportService implements ReportInterface {
         existingReport.setReportDate(report.getReportDate());
         existingReport.setCaseCloseDate(report.getCaseCloseDate());
         existingReport.setRemarks(report.getRemarks());
+        existingReport.setAppealCount(report.getAppealCount());
         existingReport.setReportUser(report.getReportUser());
         existingReport.setReportedId(report.getReportedId());
         webSocketReportHandler.sendReportUpdate(report.getReportUser().getId());
@@ -102,6 +103,14 @@ public class ReportService implements ReportInterface {
         report.setStatus(ReportStatus.Complete);
         report.setCaseCloseDate(LocalDateTime.now());
         return reportRepository.save(report);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void addUpAppealCount(Integer id) {
+        Report report = findReportById(id);
+        report.setAppealCount(report.getAppealCount() + 1);
+        reportRepository.save(report);
     }
 
     @Override
