@@ -21,9 +21,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(webSocketNotificationHandler, "/notifications")
-                .setAllowedOrigins("http://localhost:3000");
+                .setAllowedOrigins("http://10.0.2.2:8080", "http://localhost:3000","http://reactjsadprj.s3-website-us-east-1.amazonaws.com");
         registry.addHandler(webSocketReportHandler, "/reports")
-                .setAllowedOrigins("http://localhost:3000");
+                .setAllowedOrigins("http://10.0.2.2:8080", "http://localhost:3000","http://reactjsadprj.s3-website-us-east-1.amazonaws.com");
     }
 }
 
