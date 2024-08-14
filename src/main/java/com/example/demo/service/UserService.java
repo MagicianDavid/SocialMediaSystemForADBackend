@@ -298,10 +298,14 @@ public class UserService implements UserInterface {
 		int curRank = (curSocialScore + 9) / 10;
 		// set socialScore 1-60 as a list for judgment
 		List<Integer> fistRandList = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 6));
+		// set socialScore 91-120 as a list for judgment
+		List<Integer> secondRankList = new ArrayList<Integer>(Arrays.asList(10,11,12));
 		// default set format of "FixedRankForSocialScore:1-60" "FixedRankForSocialScore:0"
 		Auth adjustAuth;
 		if (fistRandList.contains(curRank)) {
 			adjustAuth = authRepository.findByRank("FixedRankForSocialScore:1-60");
+		} else if (secondRankList.contains(curRank)){
+			adjustAuth = authRepository.findByRank("FixedRankForSocialScore:91-120");
 		} else if (curRank == 0) {
 			// we should ban this user
 			// but here we just return the authorization

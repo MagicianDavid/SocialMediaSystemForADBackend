@@ -3,7 +3,6 @@ package com.example.demo.controller;
 import com.example.demo.dto.LabelDTO;
 import com.example.demo.exception.DuplicateAuthException;
 import com.example.demo.exception.DuplicateTypeException;
-import com.example.demo.model.Auth;
 import com.example.demo.model.Label;
 import com.example.demo.service.LabelService;
 import org.springframework.beans.factory.annotation.Autowired;

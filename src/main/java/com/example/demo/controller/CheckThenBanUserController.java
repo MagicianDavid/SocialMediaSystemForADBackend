@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.time.LocalDateTime;
 
+import com.example.demo.interfacemethods.AuthInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,9 @@ public class CheckThenBanUserController {
 	
 	@Autowired
 	private UserInterface userService;
+
+	@Autowired
+	private AuthInterface authService;
 	
 	@Autowired
 	private NotificationInterface notificationService;
@@ -52,12 +56,18 @@ public class CheckThenBanUserController {
     		// socialScore 71-70 --> FixedRankForSocialScore:71-80
     		// ...
     		// ...
-    		// socialScore 111-120 --> FixedRankForSocialScore:111-120
+    		// socialScore 91-120 --> FixedRankForSocialScore:91-120
     		User curUser = userService.findUserById(userId);
     		Integer olderAuthId = curUser.getAuth().getId();
+			Integer l1AuthId = authService.findAuthByRank("L1").getId();
+			Integer l2AuthId = authService.findAuthByRank("L2").getId();
+			// if the olderAuthId is L1 or L2 it's the moderator or manager do nothing
+			if (olderAuthId.equals(l1AuthId) || olderAuthId.equals(l2AuthId)) {
+				return ResponseEntity.noContent().build();
+			}
     		// return adjusted authorization
     		Auth adjustAuth = userService.checkUserSocialScoreThenAdjustAuth(userId);
-    		
+
     		// if Authorization has been updated then we do the notifications or email
     		if (!olderAuthId.equals(adjustAuth.getId())) {
     			if (adjustAuth.getRank().equals("FixedRankForSocialScore:0")) {
@@ -78,8 +88,9 @@ public class CheckThenBanUserController {
     				// status also will not change since this user is not banned,
     				// it will remain as "active"
     				// simply notify this user when his/her authorization has been updated
-					String notifTitle = "System-Auto-Generated-Notification";
-    				String notifMsg = "--Your Authorization has been updated--";
+					String notifTitle = "Authorization updated";
+    				String notifMsg = "This is a System-Auto-Generated-Notification: \n" +
+							"Your Authorization has been updated";
 					LocalDateTime notifDateTime = LocalDateTime.now();
 					Notification systemGeneratedNotif = new Notification(curUser,notifTitle,notifMsg,notifDateTime, NotificationStatus.Unread);
 					notificationService.saveNotification(systemGeneratedNotif);

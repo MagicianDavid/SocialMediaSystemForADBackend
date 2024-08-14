@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.example.demo.controller.CheckThenBanUserController;
 import com.example.demo.dto.UserDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,9 @@ public class PCMsgService implements PCMsgInterface{
 	
 	@Autowired
     private FollowListRepository followListRepository;
+
+	@Autowired
+	private CheckThenBanUserController checkThenBanUserController;
 
 	private void changePCMsgStatusById(Integer id, String operation) {
 		try {
@@ -391,9 +395,11 @@ public class PCMsgService implements PCMsgInterface{
         if (user.getSocialScore() != null) {
             user.setSocialScore(user.getSocialScore() - penalty);
             userRepository.save(user);
+			// change user authorization according to the socialScore
+			checkThenBanUserController.checkUserSocialScoreThenUpdateStatusAndAuth(user.getId());
         } else {
         	  System.out.println("User Social Score is null for User ID:" + user.getSocialScore());
-        }        
+        }
         //System.out.println("User Social Score is null for User ID:" + penalty);
     }
 	

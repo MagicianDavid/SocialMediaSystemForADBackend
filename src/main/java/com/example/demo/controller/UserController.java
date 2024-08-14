@@ -170,6 +170,20 @@ public class UserController {
         List<User> followings = followService.getFollowings(user);
         return ResponseEntity.ok(followings);
     }
+
+    @GetMapping("/{userId}/followersCount")
+    public ResponseEntity<Integer> getFollowersCount(@PathVariable Integer userId) {
+        User user = userService.findUserById(userId);
+        Integer followers = followService.getFollowers(user).size();
+        return ResponseEntity.ok(followers);
+    }
+
+    @GetMapping("/{userId}/followingsCount")
+    public ResponseEntity<Integer> getFollowingsCount(@PathVariable Integer userId) {
+        User user = userService.findUserById(userId);
+        Integer followings = followService.getFollowings(user).size();
+        return ResponseEntity.ok(followings);
+    }
     
     @GetMapping("/{curId}/isfollower/{otherId}")
     public ResponseEntity<Boolean> isFollowing(@PathVariable Integer curId, @PathVariable Integer otherId) {
