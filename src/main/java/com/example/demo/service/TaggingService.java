@@ -2,6 +2,8 @@ package com.example.demo.service;
 
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -33,7 +35,7 @@ public class TaggingService {
         return "No tags";
     }
 	 
-	 
+     //fail safe	 
 	 public String HugTagsForText(String text) {
 	        RestTemplate restTemplate = new RestTemplate();
 	        String url = "http://127.0.0.1:5000/mlbcheck";
@@ -64,6 +66,15 @@ public class TaggingService {
 	        RestTemplate restTemplate = new RestTemplate();
 	        String url = "http://127.0.0.1:5000/mlbpredict";
 
+	        // Simulate a 500 error if the input text contains "trigger500"
+	        if (text.contains("trigger500")) {
+	            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Simulated 500 error");
+	        }
+
+	        // Simulate a 404 error if the input text contains "trigger404"
+	        if (text.contains("trigger404")) {
+	            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Simulated 404 error");
+	        }
 	     
 	        HttpHeaders headers = new HttpHeaders();
 	        headers.add("Content-Type", "application/json");

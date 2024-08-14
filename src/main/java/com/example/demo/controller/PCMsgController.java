@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import com.example.demo.dto.PCMsgDTO;
 import com.example.demo.dto.PCMsgDetail;
@@ -247,18 +249,51 @@ public class PCMsgController {
 
     private void processTagsAndLabels(PCMsg pcmsg) {
         String combinedTags;
-        String tags = taggingService.spamCheck(pcmsg.getContent());
-        String tagsString = taggingService.HugTagsForText(pcmsg.getContent());
+        String tags = null;
+        String tagsString = null;
 
-        if("spam".equals(tags)) {
+        
+        try {
+        	tags = taggingService.spamCheck(pcmsg.getContent());
+        }catch (Exception e) {
+        	//System.out.println("Spam failed");
+        	tags = "spam-uncheck";
+        }
+        
+        
+        try {
+        	//System.out.println("Own API");
+            tagsString = taggingService.getTagsForText(pcmsg.getContent());
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+        	
+            if (e.getStatusCode().is5xxServerError() || e.getStatusCode().is4xxClientError()) {
+                try {
+                	//System.out.println("Hugger");
+                    tagsString = taggingService.HugTagsForText(pcmsg.getContent());
+                } catch (HttpClientErrorException | HttpServerErrorException ex) {
+                	
+                	//System.out.println("Fail-Safe");
+                    tagsString = "untagged";
+                }
+            }
+        } catch (Exception e) {
+            // Handle any other exceptions that may occur
+        	//System.out.println("Tagger failed");
+            tagsString = "untagged";
+        }        
+        
+        
+        if ("spam".equals(tags)) {
             //send notifcation to inform user?
-
             //Use replaceAll to remove the trailing comma and space
             combinedTags = tagsString != null ? String.join(",", tags, tagsString).replaceAll(",\\s*$", "") : tags;
             pcmsg.setStatus("delete");
+        }else if ("spam-uncheck".equals(tags)) {
+        	
+            combinedTags = tagsString != null ? String.join(",", tags, tagsString).replaceAll(",\\s*$", "") : tags;
         }else {
             combinedTags = tagsString;
-        }
+        } 
 
 
         Tag tag = new Tag();
