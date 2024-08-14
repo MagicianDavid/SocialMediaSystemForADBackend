@@ -95,8 +95,9 @@ public class UserService implements UserInterface {
             	throw new RuntimeException("Wrong username or pwd!");
             }
             
-        }
-        return null;
+        } else {
+			throw new RuntimeException("Not found user with name: " + username);
+		}
 	}
 
 	@Override
