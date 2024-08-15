@@ -9,6 +9,8 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @Component
 public class WebSocketUserHandler extends TextWebSocketHandler {
@@ -20,6 +22,20 @@ public class WebSocketUserHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         Integer userId = getUserIdFromSession(session);
         userSessions.put(userId, session);
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    if (session.isOpen()) {
+                        session.sendMessage(new TextMessage("ping"));
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        Timer timer = new Timer();
+        timer.schedule(task, 0, 10000);  // every 10 seconds
     }
 
     @Override
