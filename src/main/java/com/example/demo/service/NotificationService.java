@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.example.demo.configuration.WebSocketNotificationHandler;
 import com.example.demo.model.User;
+import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +26,9 @@ public class NotificationService implements NotificationInterface {
 	@Autowired
 	private WebSocketNotificationHandler webSocketNotificationHandler;
 
-	@Autowired
-	private UserService userService;
-	
+    @Autowired
+    private UserRepository userRepository;
+
 	@Override
 	public Notification findNotificationById(Integer id) {
 		return notificationRepository.findById(id)
@@ -95,7 +96,7 @@ public class NotificationService implements NotificationInterface {
 		}
 
 		LocalDateTime dateTime = LocalDateTime.now();
-		List<User> moderators = userService.findUsersByRole("Moderator");
+		List<User> moderators = userRepository.findhByJobRole("Moderator");
 		for (User moderator : moderators) {
 			Notification notification = new Notification(moderator, title, message, dateTime, NotificationStatus.Unread);
 			notificationRepository.save(notification);

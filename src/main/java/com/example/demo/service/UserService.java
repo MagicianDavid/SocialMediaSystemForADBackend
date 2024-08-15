@@ -1,12 +1,18 @@
 package com.example.demo.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.example.demo.configuration.WebSocketUserHandler;
+import com.example.demo.dto.EmailRequest;
+import com.example.demo.interfacemethods.NotificationInterface;
+import com.example.demo.model.Notification;
+import com.example.demo.statusEnum.NotificationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +45,15 @@ public class UserService implements UserInterface {
 
     @Autowired 
     private FollowListRepository followListRepository;
+
+	@Autowired
+	private WebSocketUserHandler webSocketUserHandler;
+
+	@Autowired
+	private NotificationInterface notificationService;
+
+	@Autowired
+	private EmailService emailService;
 	
 	//Count number of public users
 	public Integer CountUsers() {
@@ -196,6 +211,7 @@ public class UserService implements UserInterface {
 	@Transactional(readOnly = false)
 	public void updateUserStatusById(Integer id, UserStatus status) {
 		changeUserStatusById(id,status);
+		webSocketUserHandler.sendUserUpdate(id);
 	}
 	
 	@Override
@@ -213,6 +229,7 @@ public class UserService implements UserInterface {
 			if (curScore < 0) curScore = 0;
 			curUser.setSocialScore(curScore);
 			userRepository.save(curUser);
+			webSocketUserHandler.sendUserUpdate(id);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to " + operation + " user socialScore with ID: " + id, e);
 		}
@@ -247,6 +264,7 @@ public class UserService implements UserInterface {
 
 		curUser.setBlockList(String.join(",", blockIds));
 		userRepository.save(curUser);
+		webSocketUserHandler.sendUserUpdate(userId);
 	}
 	
 	@Override
@@ -282,10 +300,32 @@ public class UserService implements UserInterface {
 		curUser.setCountry(user.getCountry());
 		curUser.setBlockList(user.getBlockList());
 		curUser.setSocialScore(user.getSocialScore());
-		curUser.setStatus(user.getStatus());
+		if (!curUser.getAuth().getId().equals(user.getAuth().getId())) {
+			// if auth been updated, sen notification to the user
+			String notifTitle = "Authorization updated";
+			String notifMsg = "This is a System-Auto-Generated-Notification: \n" +
+					"Your Authorization has been updated by the moderator.";
+			LocalDateTime notifDateTime = LocalDateTime.now();
+			Notification systemGeneratedNotif = new Notification(curUser,notifTitle,notifMsg,notifDateTime, NotificationStatus.Unread);
+			notificationService.saveNotification(systemGeneratedNotif);
+		}
 		curUser.setAuth(user.getAuth());
+		curUser.setStatus(user.getStatus());
 		curUser.setRole(user.getRole());
 		curUser.setJoinDate(user.getJoinDate());
+		if (user.getStatus().equals(UserStatus.ban)) {
+			// if this user's status been changed to 'ban'
+			// ban this user & send email
+			String systemAutoBanEmialSubject = "Ban Email";
+			String systemAutoBanEmialText = "We're very sorry to inform you that you've been baned by the moderator.";
+			EmailRequest systemAutoBanEmial = new EmailRequest(curUser.getEmail(),systemAutoBanEmialSubject,systemAutoBanEmialText);
+			try {
+				emailService.sendSimpleMessage(systemAutoBanEmial.getTo(), systemAutoBanEmial.getSubject(), systemAutoBanEmial.getText());
+			} catch (Exception e) {
+				throw new RuntimeException("Failed to send email\n"+e.getMessage());
+			}
+		}
+		webSocketUserHandler.sendAllUserUpdate();
 		return userRepository.save(curUser);
 	}
 	
@@ -314,6 +354,7 @@ public class UserService implements UserInterface {
 		}
 		curUser.setAuth(adjustAuth);
 		userRepository.save(curUser);
+		webSocketUserHandler.sendUserUpdate(userId);
 		return adjustAuth;
 	}
 

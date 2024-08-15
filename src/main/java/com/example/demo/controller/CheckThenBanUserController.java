@@ -59,12 +59,12 @@ public class CheckThenBanUserController {
     		// socialScore 91-120 --> FixedRankForSocialScore:91-120
     		User curUser = userService.findUserById(userId);
     		Integer olderAuthId = curUser.getAuth().getId();
-			Integer l1AuthId = authService.findAuthByRank("L1").getId();
-			Integer l2AuthId = authService.findAuthByRank("L2").getId();
-			// if the olderAuthId is L1 or L2 it's the moderator or manager do nothing
-			if (olderAuthId.equals(l1AuthId) || olderAuthId.equals(l2AuthId)) {
-				return ResponseEntity.noContent().build();
-			}
+//			Integer l1AuthId = authService.findAuthByRank("L1").getId();
+//			Integer l2AuthId = authService.findAuthByRank("L2").getId();
+//			// if the olderAuthId is L1 or L2 it's the moderator or manager do nothing
+//			if (olderAuthId.equals(l1AuthId) || olderAuthId.equals(l2AuthId)) {
+//				return ResponseEntity.noContent().build();
+//			}
     		// return adjusted authorization
     		Auth adjustAuth = userService.checkUserSocialScoreThenAdjustAuth(userId);
 

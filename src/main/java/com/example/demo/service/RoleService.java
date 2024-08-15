@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import java.util.List;
 
+import com.example.demo.configuration.WebSocketUserHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,9 @@ public class RoleService implements RoleInterface {
 
 	@Autowired
 	private RoleRepository roleRepository;
+
+	@Autowired
+	private WebSocketUserHandler webSocketUserHandler;
 
 	@Override
 	public List<Role> findAllRoles() {
@@ -51,6 +55,7 @@ public class RoleService implements RoleInterface {
 	public void deleteRoleById(Integer id) {
 		try {
 			roleRepository.deleteById(id);
+			webSocketUserHandler.sendAllUserUpdate();
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to delete Role with ID: " + id, e);
 		}
@@ -61,6 +66,7 @@ public class RoleService implements RoleInterface {
 	public Role updateRole(Integer id, Role newRole) {
 		Role existingRole = findRoleById(id);
 		existingRole.setType(newRole.getType());
+		webSocketUserHandler.sendAllUserUpdate();
 		return roleRepository.save(existingRole);
 	}
 

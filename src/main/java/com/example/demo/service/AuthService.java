@@ -1,7 +1,11 @@
 package com.example.demo.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import com.example.demo.configuration.WebSocketUserHandler;
+import com.example.demo.model.Notification;
+import com.example.demo.statusEnum.NotificationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +22,9 @@ public class AuthService implements AuthInterface{
 	
 	@Autowired
 	private AuthRepository authRepository;
+
+	@Autowired
+	private WebSocketUserHandler webSocketUserHandler;;
 
 	@Override
 	public List<Auth> findAllAuths() {
@@ -60,6 +67,7 @@ public class AuthService implements AuthInterface{
 	public void deleteAuthById(Integer id) {
 		try {
 			authRepository.deleteById(id);
+			webSocketUserHandler.sendAllUserUpdate();
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to delete Auth with ID: " + id, e);
 		}
@@ -72,6 +80,7 @@ public class AuthService implements AuthInterface{
 		Auth fAuth = findAuthById(id);
 		fAuth.setRank(newAuth.getRank());
 		fAuth.setMenuViewJason(newAuth.getMenuViewJason());
+		webSocketUserHandler.sendAllUserUpdate();
 		return authRepository.save(fAuth);
 	}
 	

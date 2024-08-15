@@ -11,11 +11,14 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     private final WebSocketNotificationHandler webSocketNotificationHandler;
     private final WebSocketReportHandler webSocketReportHandler;
+    private final WebSocketUserHandler webSocketUserHandler;
 
     public WebSocketConfig(WebSocketNotificationHandler webSocketNotificationHandler,
-                           WebSocketReportHandler webSocketReportHandler) {
+                           WebSocketReportHandler webSocketReportHandler,
+                           WebSocketUserHandler webSocketUserHandler) {
         this.webSocketNotificationHandler = webSocketNotificationHandler;
         this.webSocketReportHandler = webSocketReportHandler;
+        this.webSocketUserHandler = webSocketUserHandler;
     }
 
     @Override
@@ -23,6 +26,8 @@ public class WebSocketConfig implements WebSocketConfigurer {
         registry.addHandler(webSocketNotificationHandler, "/notifications")
                 .setAllowedOrigins("http://10.0.2.2:8080", "http://localhost:3000","http://reactjsadprj.s3-website-us-east-1.amazonaws.com");
         registry.addHandler(webSocketReportHandler, "/reports")
+                .setAllowedOrigins("http://10.0.2.2:8080", "http://localhost:3000","http://reactjsadprj.s3-website-us-east-1.amazonaws.com");
+        registry.addHandler(webSocketUserHandler, "/users")
                 .setAllowedOrigins("http://10.0.2.2:8080", "http://localhost:3000","http://reactjsadprj.s3-website-us-east-1.amazonaws.com");
     }
 }
