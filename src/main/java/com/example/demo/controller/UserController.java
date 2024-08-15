@@ -175,6 +175,7 @@ public class UserController {
     public ResponseEntity<Integer> getFollowersCount(@PathVariable Integer userId) {
         User user = userService.findUserById(userId);
         Integer followers = followService.getFollowers(user).size();
+        System.out.println(followers);
         return ResponseEntity.ok(followers);
     }
 
@@ -182,6 +183,7 @@ public class UserController {
     public ResponseEntity<Integer> getFollowingsCount(@PathVariable Integer userId) {
         User user = userService.findUserById(userId);
         Integer followings = followService.getFollowings(user).size();
+        System.out.println(followings);
         return ResponseEntity.ok(followings);
     }
     
