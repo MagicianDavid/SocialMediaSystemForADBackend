@@ -56,6 +56,8 @@ public interface PCMsgInterface {
 	
 	// Return If User like the post
 	boolean hasUserLikedPost(int userId, int postId);
+	// Return if this comment belongs to this user
+	boolean isPCMsgBelongToUser(int userId, Integer pcmsgId);
 
 	// Pagination
 	Page<PCMsgDTO> findAllPosts(Integer page, Integer size);

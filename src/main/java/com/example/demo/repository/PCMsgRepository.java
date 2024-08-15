@@ -74,4 +74,7 @@ public interface PCMsgRepository extends JpaRepository<PCMsg,Integer> {
             @Param("followingUserIds") List<Integer> followingUserIds,
             @Param("blockedUserIds") List<Integer> blockedUserIds,
             @Param("userId") int userId,Pageable pageable);
+
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM PCMsg p WHERE p.user.id = :userId AND p.id = :pcmsgId")
+    boolean isPCMsgBelongToUser(@Param("userId") int userId, @Param("pcmsgId") int pcmsgId);
 }

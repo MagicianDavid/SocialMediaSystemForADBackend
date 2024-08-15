@@ -366,7 +366,11 @@ public class PCMsgService implements PCMsgInterface{
 	public boolean hasUserLikedPost(int userId, int postId){
         return likeRepository.existsByUserIdAndPCMsgId(userId, postId);
 	}
-	
+
+	@Override
+	public boolean isPCMsgBelongToUser(int userId, Integer pcmsgId) {
+		return pcmsgRepository.isPCMsgBelongToUser(userId, pcmsgId);
+	}
 	
 	//Calculate the amount of score to be minus off after they posted.
     public void penalizeUserBasedOnTags(PCMsg post) {

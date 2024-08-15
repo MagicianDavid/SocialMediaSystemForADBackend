@@ -172,6 +172,13 @@ public class PCMsgController {
          boolean isLiked = pcmsgService.hasUserLikedPost(userId, postId);
          return new ResponseEntity<>(isLiked, HttpStatus.OK);
      }
+
+    //isPCMsgBelongToUser
+    @GetMapping("/{pcmsgId}/belongsTo/{userId}")
+    public ResponseEntity<Boolean> isPCMsgBelongToUser(@PathVariable int pcmsgId, @PathVariable int userId) {
+        boolean isBelong = pcmsgService.isPCMsgBelongToUser(userId, pcmsgId);
+        return new ResponseEntity<>(isBelong, HttpStatus.OK);
+    }
     
  	// TODO: post sourceId should be null
  	// and the tag logic haven't done
