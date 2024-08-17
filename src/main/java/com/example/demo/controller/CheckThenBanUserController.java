@@ -78,11 +78,11 @@ public class CheckThenBanUserController {
     				String systemAutoBanEmialSubject = "System-Auto-Ban-For-Aggresive-Behaviours";
     				String systemAutoBanEmialText = "We're very sorry to inform you that you've been baned.";
     				EmailRequest systemAutoBanEmial = new EmailRequest(curUser.getEmail(),systemAutoBanEmialSubject,systemAutoBanEmialText);
-    				try {
-    		            emailService.sendSimpleMessage(systemAutoBanEmial.getTo(), systemAutoBanEmial.getSubject(), systemAutoBanEmial.getText());
-    		        } catch (Exception e) {
-    		        	throw new RuntimeException("Failed to send email\n"+e.getMessage());
-    		        }
+//    				try {
+//    		            emailService.sendSimpleMessage(systemAutoBanEmial.getTo(), systemAutoBanEmial.getSubject(), systemAutoBanEmial.getText());
+//    		        } catch (Exception e) {
+//    		        	throw new RuntimeException("Failed to send email\n"+e.getMessage());
+//    		        }
     			} else {
     				// since authorization has already been updated
     				// status also will not change since this user is not banned,

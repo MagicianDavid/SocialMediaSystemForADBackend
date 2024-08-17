@@ -397,7 +397,7 @@ public class PCMsgService implements PCMsgInterface{
         }
         
         if (user.getSocialScore() != null) {
-            user.setSocialScore(user.getSocialScore() - penalty);
+            user.setSocialScore(Math.max(user.getSocialScore() - penalty,0));
             userRepository.save(user);
 			// change user authorization according to the socialScore
 			checkThenBanUserController.checkUserSocialScoreThenUpdateStatusAndAuth(user.getId());
